@@ -94,8 +94,8 @@ const Login = () => {
     }
     return (
         <>
-            <div className="min-h-screen  dark:bg-gray-900 transition-colors duration-300">
-                <div className="hero min-h-screen">
+            <div className="  dark:bg-gray-900 transition-colors duration-300 mt-20 my-10">
+                <div className="hero ">
                     <div className="hero-content flex-col lg:flex-row-reverse">
                         <div className="card w-full max-w-sm shrink-0 shadow-2xl  transition-colors duration-300 nav">
                             <div className="card-body">
