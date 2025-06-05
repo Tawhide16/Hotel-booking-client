@@ -6,10 +6,13 @@ import {
 import MainlyOut from '../Component/MainlyOut';
 import Login from '../Pages/LogIn';
 import Register from '../Pages/Register';
-import Rooms from '../Component/Rooms';
+
 import PrivetRoute from '../Provider/PrivetRoute';
 import MyBookings from '../Component/MyBookings';
 import Home from "../Component/Home/Home";
+import Rooms from "../Pages/Rooms/Rooms";
+import RoomsDetails from "../Pages/Rooms/RoomsDetails";
+
 // import ErrorPage from '../Pages/ErrorPage';
 
 export const router = createBrowserRouter([
@@ -33,6 +36,11 @@ export const router = createBrowserRouter([
         {
           path:"/rooms",
           Component:Rooms
+        },
+        {
+          path:"/rooms/:id",
+          Component:RoomsDetails,
+          loader: ({params}) => fetch(`http://localhost:3000/rooms/${params.id}`)
         },
         {
           path:"/my-bookings",

@@ -1,92 +1,56 @@
 [
   {
     "id": 1,
-    "thumbnail": "https://i.ibb.co/KzmBZLSx/clay-banks-z-Dko-Uqgx6-M-unsplash.jpg",
-    "name": "Dhaka Drag Racers",
-    "category": "Drag Racing",
-    "description": "Weekly drag racing meets and car modification workshops",
-    "location": "Dhaka International Circuit",
-    "members": 215,
-    "upcoming_event": {
-      "date": "2025-06-18",
-      "title": "Winter Quarter-Mile Challenge"
-    },
-    "entryFee": "1500",
-    "viewMore": "/groups/1"
+    "name": "Hotel Velocity Dhaka",
+    "thumbnail": "https://i.ibb.co/SwtPmHQM/anmol-seth-h-Db-Cj-HNd-F48-unsplash.jpg",
+    "description": "Weekly drag racing meets and car modification workshops"
   },
   {
     "id": 2,
-    "thumbnail": "https://i.ibb.co.com/C508tTbC/onur-kurt-5g-IXBr4-XRVc-unsplash.jpg",
-    "name": "Bangladesh Road Trippers",
-    "category": "Travel",
-    "description": "Exploring hidden gems of Bangladesh through road trips",
-    "location": "Countrywide",
-    "members": 342,
-    "upcoming_event": {
-      "date": "2025-07-05",
-      "title": "Cox's Bazar to Bandarban Coastal Run"
-    },
-    "entryFee": "2000",
-    "viewMore": "/groups/2"
+    "name": "Coastal Drift Inn",
+    "thumbnail": "https://i.ibb.co/7tjWgYM2/rod-long-2-P-ifaet-Dm0-unsplash.jpg",
+    "description": "Exploring hidden gems of Bangladesh through road trips"
   },
   {
     "id": 3,
-    "thumbnail": "https://i.ibb.co/B20ZqQ0b/mike-swigunski-6-Sg-LJg7k-M7-E-unsplash.jpg",
-    "name": "Vintage Riders Club",
-    "category": "Old Cars",
-    "description": "Preserving and riding classic automobiles from 60s-90s",
-    "location": "Chittagong",
-    "members": 127,
-    "upcoming_event": {
-      "date": "2025-06-22",
-      "title": "Classic Car Show & Tea Party"
-    },
-    "entryFee": "800",
-    "viewMore": "/groups/3"
+    "name": "Retro Wheels Lodge",
+    "thumbnail": "https://i.ibb.co/RpjKv8C7/roberto-nickson-emqn-SQw-QQDo-unsplash.jpg",
+    "description": "Preserving and riding classic automobiles from 60s-90s"
   },
   {
     "id": 4,
-    "thumbnail": "https://i.ibb.co/XrtYRwMV/goncalo-silva-Bd-Gifu8-Gm-Dc-unsplash.jpg",
-    "name": "Aesthetic Auto Society",
-    "category": "Car Aesthetics",
-    "description": "Car modification focused on visual perfection and styling",
-    "location": "Dhaka & Sylhet",
-    "members": 189,
-    "upcoming_event": {
-      "date": "2025-06-25",
-      "title": "LED Lighting Workshop"
-    },
-    "entryFee": "500",
-    "viewMore": "/groups/4"
+    "name": "Aesthetic Motor Hotel",
+    "thumbnail": "https://i.ibb.co/prQXPGGR/ciudad-maderas-MXb-M1-Nr-Rqt-I-unsplash.jpg",
+    "description": "Car modification focused on visual perfection and styling"
   },
   {
     "id": 5,
-    "thumbnail": "https://i.postimg.cc/rpChgByC/pietro-rampazzo-x5-Gc-XFv-JJh-I-unsplash.jpg",
-    "name": "Bike & Breakfast Riders",
-    "category": "Riding",
-    "description": "Sunday morning rides ending at scenic breakfast spots",
-    "location": "Savar Countryside",
-    "members": 94,
-    "upcoming_event": {
-      "date": "2025-07-01",
-      "title": "Winter Sunrise Ride to Jamuna Bridge"
-    },
-    "entryFee": "300",
-    "viewMore": "/groups/5"
+    "name": "Sunrise Riders Inn",
+    "thumbnail": "https://i.ibb.co/jPVgL7T7/markus-spiske-g5-ZIXjz-RGds-unsplash.jpg",
+    "description": "Sunday morning rides ending at scenic breakfast spots"
   },
   {
     "id": 6,
-    "thumbnail": "https://i.postimg.cc/vmfRy2Yc/tim-vegas-hwrpqq-Ajj-S8-unsplash.jpg",
-    "name": "Turbo Nomads",
-    "category": "Travel Racing",
-    "description": "Combining scenic travel with legal speed runs",
-    "location": "Bangladesh Highways",
-    "members": 156,
-    "upcoming_event": {
-      "date": "2025-07-05",
-      "title": "Dhaka to Kuakata Time Trial"
-    },
-    "entryFee": "2500",
-    "viewMore": "/groups/6"
+    "name": "Turbo Nomad Suites",
+    "thumbnail": "https://i.ibb.co/F9GtF1T/runnyrem-Lfqm-ND-hym8-unsplash.jpg",
+    "description": "Combining scenic travel with legal speed runs"
+  },
+  {
+    "id": 7,
+    "name": "MotoFrame Hotel & Studios",
+    "thumbnail": "https://i.ibb.co/6cVkB5L3/bilderboken-rlw-E8f8an-Oc-unsplash.jpg",
+    "description": "Capturing machines in motion and aesthetic frames"
+  },
+  {
+    "id": 8,
+    "name": "Offroad Escape Resort",
+    "thumbnail": "https://i.ibb.co/XfcFRbXS/rhema-kallianpur-uoc-Sn-WMhn-As-unsplash.jpg",
+    "description": "Weekend off-roading events in wild and muddy terrain"
+  },
+  {
+    "id": 9,
+    "name": "GarageStay Khulna",
+    "thumbnail": "https://i.ibb.co/23cGkqDN/vojtech-bruzek-Yrxr3bs-Pd-S0-unsplash.jpg",
+    "description": "Tinkering, tuning, and transforming all kinds of rides"
   }
 ]

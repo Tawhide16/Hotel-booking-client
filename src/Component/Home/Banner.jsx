@@ -93,7 +93,7 @@ const Banner = () => {
           />
           <div className={`absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent`} />
           <div className={`absolute bottom-16 left-16 text-white p-8 max-w-3xl transition-all duration-700 ease-out ${currentSlide === index ? 'translate-x-0 opacity-100' : '-translate-x-20 opacity-0'}`}>
-            <h2 className="text-4xl font-bold mb-4">{event.title || "Event's"}</h2>
+            <h2 className="text-4xl font-bold mb-4">{event.name || "Event's"}</h2>
             <p className="text-xl mb-6">{event.description || "UpComing Event"}</p>
            <Link to="/rooms">
            <button className="bg-gradient-to-br from-[#0B2545] to-[#D4AF37] btn btn-primary px-8 py-3 text-lg rounded-full hover:scale-105 transition-transform border-none bg-[#0B2545] hover:bg-[#D4AF37]">
