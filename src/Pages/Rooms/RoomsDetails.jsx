@@ -1,12 +1,28 @@
-import React from 'react';
+
 import { NavLink, useLoaderData } from 'react-router';
-import { FiMapPin, FiCalendar, FiCheck, FiStar, FiChevronLeft, FiChevronRight, FiWifi, FiArrowRight, FiArrowLeft } from 'react-icons/fi';
-import { FaSwimmingPool, FaSpa, FaParking, FaUtensils, FaSnowflake } from 'react-icons/fa';
+import { FiMapPin, FiCalendar, FiCheck, FiStar, FiChevronLeft, FiChevronRight, FiWifi, FiArrowRight, FiArrowLeft, FiDollarSign } from 'react-icons/fi';
+import { FaSwimmingPool, FaSpa, FaUtensils, FaSnowflake } from 'react-icons/fa';
+import { FiX, FiHome } from 'react-icons/fi';
+import React, { useState } from 'react';
+
+
+
 
 const RoomsDetails = () => {
     const detail = useLoaderData(); // Now gets an object, not an array
+    const [isBookingDisabled, setIsBookingDisabled] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = React.useState(0);
-
+        const [newDate, setFormData] = useState({
+        name: '',
+        hobbyCategory: '',
+        description: '',
+        meetingLocation: '',
+        maxMembers: '',
+        startDate: '',
+        imageUrl: '',
+        userName: '',
+        userEmail: '',
+    });
     const nextImage = () => {
         setCurrentImageIndex(prev => (prev + 1) % detail.image_urls.length);
     };
@@ -14,6 +30,38 @@ const RoomsDetails = () => {
     const prevImage = () => {
         setCurrentImageIndex(prev => (prev - 1 + detail.image_urls.length) % detail.image_urls.length);
     };
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    //update data
+    const handleUpdate = (e) => {
+        e.preventDefault()
+        const form = e.target;
+        const fromDate = new FormData(form);
+        const newDate = Object.fromEntries(fromDate.entries())
+        console.log(newDate);
+
+
+        fetch(`http://localhost:3000/rooms/${detail._id}`, {
+            method: 'PUT',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(newDate)
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.matchedCount) {
+                    setIsBookingDisabled(true);
+                    console.log(data);
+                }
+
+            })
+    }
+
 
     return (
         <div>
@@ -27,6 +75,9 @@ const RoomsDetails = () => {
                         alt={detail.hotel_name}
                         className="w-full h-full object-cover"
                     />
+
+
+
                     {/* Navigation Arrows */}
                     <button
                         onClick={prevImage}
@@ -77,36 +128,101 @@ const RoomsDetails = () => {
                             </div>
                         </div>
 
-                        {/* Price Box */}
-                        <div className="mt-4 md:mt-0 bg-blue-50 border border-blue-100 rounded-xl p-4 w-full md:w-64">
-                            <p className="text-gray-500 text-sm">Price for {detail.stay_dates}</p>
-                            <p className="text-3xl font-bold text-gray-900 mt-1">
-                                {detail.currency} {detail.price_per_night.toLocaleString()}
-                            </p>
-                            <p className="text-gray-500 text-sm">per night</p>
-                            <p className="text-xs text-gray-500 mt-1">via {detail.booking_site}</p>
+                        {/* Price Box date update from */}
+                        <form action="" onSubmit={handleUpdate}>
+                            <div className="mt-4 md:mt-0 bg-blue-50 border border-blue-100 rounded-xl p-4 w-full md:w-64">
 
+                                <div className="space-y-3">
 
-                            {/* Open the modal using document.getElementById('ID').showModal() method */}
-                            <button className="btn w-full mt-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition-all duration-300" onClick={() => document.getElementById('my_modal_1').showModal()}>Book Now</button>
-                            <dialog id="my_modal_1" className="modal">
-                                <div className="modal-box">
-                                    <h3 className="font-bold text-lg">Hello!</h3>
-                                    <p className="py-4">Press ESC key or click the button below to close</p>
-                                    <div className="modal-action">
-                                        <form method="dialog">
-                                            {/* if there is a button in form, it will close the modal */}
-                                            <button className="btn">Close</button>
-                                        </form>
-                                    </div>
                                 </div>
-                            </dialog>
+                                <p className="text-3xl font-bold text-gray-900 mt-1">
+                                    {detail.currency} {detail.price_per_night.toLocaleString()}
+                                </p>
+                                <p className="text-gray-500 text-sm">per night</p>
+                                <p className="text-xs text-gray-500 mt-1">via {detail.booking_site}</p>
 
-                            <div className="flex items-center mt-3 text-green-600 text-sm">
-                                <FiCheck className="mr-1" />
-                                <span>{detail.cancellation_policy}</span>
+
+
+
+                                {/* Open the modal using document.getElementById('ID').showModal() method */}
+                                <button
+
+                                    className={`btn w-full mt-4 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition-all duration-300 ${isBookingDisabled
+                                        ? 'bg-gray-400 cursor-not-allowed'
+                                        : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'
+                                        }`}
+                                    onClick={() => document.getElementById('my_modal_1').showModal()}
+                                >
+                                    Book Now
+                                </button>
+
+                                <dialog id="my_modal_1" className="modal">
+                                    <div className="modal-box relative">
+                                        {/* Close Button (X) */}
+                                        <form method="dialog">
+                                            <button className="btn btn-sm btn-circle absolute right-2 top-2 hover:bg-red-500 hover:text-white transition">
+                                                <FiX />
+                                            </button>
+                                        </form>
+
+                                        {/* Modal Content */}
+                                        <h3 className="font-bold text-2xl flex items-center gap-2 text-blue-700 mb-4">
+                                            <FiHome className="text-indigo-600" /> {detail.hotel_name}
+                                        </h3>
+                                        <p className="flex items-center gap-2 text-gray-600">
+                                            <FiCalendar className="text-indigo-500" /> Date:
+                                            <input
+                                            onChange={handleChange}
+                                                name='date'
+                                                type="date"
+                                                className="ml-2 px-3 py-1 border rounded-lg text-sm"
+                                                defaultValue={detail.stay_dates}
+                                                value={newDate.stay_dates}
+                                            />
+                                        </p>
+
+                                        <div className="space-y-3">
+                                            <p className="flex items-center gap-2 text-gray-600">
+                                                <FiCalendar className="text-indigo-500" /> Stay Date:{detail.stay_dates}
+                                            </p>
+
+                                            <p className="flex items-center gap-2 text-gray-600">
+                                                <FiMapPin className="text-red-500" /> Location: {detail.location}
+                                            </p>
+
+                                            <p className="flex items-center gap-2 text-gray-600">
+                                                <FiDollarSign className="text-green-600" /> Price per Night: <span className="font-semibold">{detail.price_per_night}</span>
+                                            </p>
+                                        </div>
+
+                                        {/* Modal Action Button */}
+                                        <div className="modal-action">
+                                            <form method="dialog" className="w-full">
+                                                <button
+                                                    disabled={isBookingDisabled}
+                                                    type="submit"
+                                                    className={`w-full mt-4 text-white font-semibold py-3 px-4 rounded-lg shadow-lg transition-all duration-300 flex items-center justify-center gap-2
+                                                 ${isBookingDisabled
+                                                            ? 'bg-gray-400 cursor-not-allowed opacity-60'
+                                                            : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 cursor-pointer'
+                                                        }`}
+                                                >
+                                                    <FiCalendar className="text-white" />
+                                                    Confirm Booking
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </dialog>
+
+
+
+                                <div className="flex items-center mt-3 text-green-600 text-sm">
+                                    <FiCheck className="mr-1" />
+                                    <span>{detail.cancellation_policy}</span>
+                                </div>
                             </div>
-                        </div>
+                        </form>
                     </div>
 
                     {/* Facilities Section */}
