@@ -12,8 +12,9 @@ import MyBookings from '../Component/MyBookings';
 import Home from "../Component/Home/Home";
 import Rooms from "../Pages/Rooms/Rooms";
 import RoomsDetails from "../Pages/Rooms/RoomsDetails";
+import Faq from "../Component/Home/Faq";
 
-// import ErrorPage from '../Pages/ErrorPage';
+import ErrorPage from '../Pages/ErrorPage';
 
 export const router = createBrowserRouter([
   {
@@ -24,6 +25,11 @@ export const router = createBrowserRouter([
             path:"/",
             loader: () => fetch('/hobby.json'),
             Component:Home
+        },
+        {
+          path:"/faq",
+          Component:Faq,
+          loader: () => fetch('/f.json')
         },
         {
           path:"/login",
@@ -49,6 +55,6 @@ export const router = createBrowserRouter([
           </PrivetRoute>
         }
     ],
-    // errorElement:<ErrorPage></ErrorPage>
+    errorElement:<ErrorPage></ErrorPage>
   },
 ]);

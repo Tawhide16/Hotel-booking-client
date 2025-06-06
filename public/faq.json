@@ -1,0 +1,27 @@
+[
+  {
+    "id": 1,
+    "question": "What are the check-in and check-out times?",
+    "answer": "Check-in starts from 12:00 PM and check-out must be done by 11:00 AM."
+  },
+  {
+    "id": 2,
+    "question": "Can I cancel my booking?",
+    "answer": "Yes, full refunds are available if canceled at least 24 hours before check-in."
+  },
+  {
+    "id": 3,
+    "question": "Is free Wi-Fi available?",
+    "answer": "Absolutely! Free Wi-Fi is available in all rooms and common areas."
+  },
+  {
+    "id": 4,
+    "question": "Do you offer guest parking?",
+    "answer": "Yes, free parking is available on a first-come, first-served basis."
+  },
+  {
+    "id": 5,
+    "question": "Are pets allowed in the hotel?",
+    "answer": "Sorry, pets are not allowed in the hotel premises."
+  }
+]
