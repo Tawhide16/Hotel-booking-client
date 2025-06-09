@@ -269,67 +269,72 @@ const RoomsDetails = () => {
 
                         {/* Reviews Section */}
                         {/* Reviews Section */}
-<div className="mt-8">
-    <h2 className="text-xl font-bold text-gray-900 mb-4">Guest Reviews</h2>
-    <div className="bg-gray-50 rounded-xl p-6">
-        <div className="flex items-center mb-4">
-            <div className="text-4xl font-bold mr-4">{detail.rating}/10</div>
-            <div>
-                <div className="flex items-center">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                        <FiStar
-                            key={star}
-                            className={`h-5 w-5 ${
-                                star <= Math.floor(detail.rating / 2)
-                                    ? 'text-yellow-400 fill-current'
-                                    : 'text-gray-300'
-                            }`}
-                        />
-                    ))}
-                </div>
-                <p className="text-gray-600 mt-1">
-                    Based on {detail.review_count.toLocaleString()} reviews
-                </p>
-            </div>
-        </div>
+                        <div className="mt-8">
+                            <h2 className="text-xl font-bold text-gray-900 mb-4">Guest Reviews</h2>
+                            <div className="bg-gray-50 rounded-xl p-6">
+                                <div className="flex items-center mb-4">
+                                    <div className="text-4xl font-bold mr-4">{detail.rating}/10</div>
+                                    <div>
+                                        <div className="flex items-center">
+                                            {[1, 2, 3, 4, 5].map((star) => (
+                                                <FiStar
+                                                    key={star}
+                                                    className={`h-5 w-5 ${star <= Math.floor(detail.rating / 2)
+                                                        ? 'text-yellow-400 fill-current'
+                                                        : 'text-gray-300'
+                                                        }`}
+                                                />
+                                            ))}
+                                        </div>
+                                        <p className="text-gray-600 mt-1">
+                                            {
+                                                reviews.length === 0
+                                                    ? <p class="text-gray-400 italic text-base font-light py-2 px-3 rounded-lg bg-gray-50 inline-flex items-center">
+                                                        <span class="mr-2 text-lg">No reviews found yet</span>
+                                                    </p>
+                                                    : <p>Based on {reviews.length} reviews</p>
+                                            }
 
-        {/* Dynamic Reviews Mapping */}
-        <div className="grid md:grid-cols-2 gap-4 mt-6">
-            {reviews.map((review) => (
-                <div key={review._id} className="bg-white p-4 rounded-lg shadow-sm">
-                    <div className="flex items-center">
-                        <div className="flex items-center">
-                            {[1, 2, 3, 4, 5].map((star) => (
-                                <FiStar
-                                    key={star}
-                                    className={`h-4 w-4 ${
-                                        star <= review.rating
-                                            ? 'text-yellow-400 fill-current'
-                                            : 'text-gray-300'
-                                    }`}
-                                />
-                            ))}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* Dynamic Reviews Mapping */}
+                                <div className="grid md:grid-cols-2 gap-4 mt-6">
+                                    {reviews.map((review) => (
+                                        <div key={review._id} className="bg-white p-4 rounded-lg shadow-sm">
+                                            <div className="flex items-center">
+                                                <div className="flex items-center">
+                                                    {[1, 2, 3, 4, 5].map((star) => (
+                                                        <FiStar
+                                                            key={star}
+                                                            className={`h-4 w-4 ${star <= review.rating
+                                                                ? 'text-yellow-400 fill-current'
+                                                                : 'text-gray-300'
+                                                                }`}
+                                                        />
+                                                    ))}
+                                                </div>
+                                                <span className="ml-2 text-sm font-medium">
+                                                    {review.rating >= 4.5
+                                                        ? "Perfect"
+                                                        : review.rating >= 3
+                                                            ? "Great"
+                                                            : "Okay"}
+                                                </span>
+                                            </div>
+                                            <p className="mt-2 text-gray-600">"{review.comment}"</p>
+                                            <p className="mt-2 text-sm text-gray-500">
+                                                - {review.user || "Anonymous"}, {new Date(review.timestamp).toLocaleDateString('en-US', {
+                                                    month: 'long',
+                                                    year: 'numeric',
+                                                })}
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
                         </div>
-                        <span className="ml-2 text-sm font-medium">
-                            {review.rating >= 4.5
-                                ? "Perfect"
-                                : review.rating >= 3
-                                ? "Great"
-                                : "Okay"}
-                        </span>
-                    </div>
-                    <p className="mt-2 text-gray-600">"{review.comment}"</p>
-                    <p className="mt-2 text-sm text-gray-500">
-                        - {review.user || "Anonymous"}, {new Date(review.timestamp).toLocaleDateString('en-US', {
-                            month: 'long',
-                            year: 'numeric',
-                        })}
-                    </p>
-                </div>
-            ))}
-        </div>
-    </div>
-</div>
 
                     </div>
                 </div>
