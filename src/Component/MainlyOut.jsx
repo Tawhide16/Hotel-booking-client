@@ -9,7 +9,7 @@ const MainlyOut = () => {
     return (
         <div>
             <NavBar></NavBar>
-            <div >
+            <div className="min-h-[70vh] px-4 py-6">
                 <Outlet></Outlet>
             </div>
             <ToastContainer></ToastContainer>

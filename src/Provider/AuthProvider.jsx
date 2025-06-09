@@ -6,7 +6,7 @@ import { GoogleAuthProvider } from 'firebase/auth';
 import { auth } from '../Firebase/Firebase.config';
 
 
-export const AuthContext = createContext()
+  export const AuthContext = createContext()
 
 
 
@@ -82,7 +82,9 @@ const AuthProvider = ({children}) => {
         updateUser
         
     }
-    return <AuthContext value={authData}>{children}</AuthContext>
+   return <AuthContext.Provider value={authData}>{children}</AuthContext.Provider>
+
 };
+
 
 export default AuthProvider;

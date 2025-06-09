@@ -7,10 +7,10 @@ const Footer = () => {
     <footer className="bg-gray-900 text-white pt-16 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-          
+
           {/* About Section */}
           <div className="space-y-4">
-            <h3 className="text-xl font-bold text-amber-400">LuxuryStays</h3>
+            <h3 className="text-xl font-bold text-amber-400">spanLodge</h3>
             <p className="text-gray-300">
               Discover the finest hotels and resorts worldwide. We offer exceptional stays with unforgettable experiences.
             </p>
@@ -79,14 +79,14 @@ const Footer = () => {
               Subscribe to get special offers, free giveaways, and once-in-a-lifetime deals.
             </p>
             <form className="mt-4 flex">
-              <input 
-                type="email" 
-                placeholder="Your email" 
+              <input
+                type="email"
+                placeholder="Your email"
                 className="px-4 py-3 w-full rounded-l-lg focus:outline-none focus:ring-2 focus:ring-amber-400 text-gray-800"
                 required
               />
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="bg-amber-500 hover:bg-amber-600 text-white font-semibold px-4 rounded-r-lg transition-colors"
               >
                 Subscribe
