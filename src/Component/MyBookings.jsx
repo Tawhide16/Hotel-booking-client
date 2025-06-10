@@ -12,8 +12,11 @@ import {
 import { useAuth } from "../hooks/useAuth";
 import axios from "axios";
 import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 
 const MyBookings = () => {
+  const [newDate, setNewDate] = useState(""); // for new date input
+  const [editingBookingId, setEditingBookingId] = useState(null);
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -44,21 +47,32 @@ const MyBookings = () => {
     fetchBookings();
   }, [user]);
 
-  const handleCancel = async (id) => {
-    const confirmCancel = window.confirm("Are you sure you want to cancel this booking?");
-    if (!confirmCancel) return;
+const handleCancel = async (id) => {
+  const result = await Swal.fire({
+    title: "Are you sure?",
+    text: "You won't be able to revert this!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, delete it!"
+  });
 
-    try {
-      const res = await axios.delete(`http://localhost:3000/bookings/${id}`);
-      if (res.data.deletedCount > 0) {
-        toast.success("Booking cancelled successfully!");
-        setBookings((prev) => prev.filter((b) => b._id !== id));
-      }
-    } catch (err) {
-      console.error("Cancel error:", err);
-      toast.error("Failed to cancel booking");
+  if (!result.isConfirmed) return;
+
+  try {
+    const res = await axios.delete(`http://localhost:3000/bookings/${id}`);
+    if (res.data.deletedCount > 0) {
+      await Swal.fire("Deleted!", "Your booking has been cancelled.", "success");
+      toast.success("Booking cancelled successfully!");
+      setBookings((prev) => prev.filter((b) => b._id !== id));
     }
-  };
+  } catch (err) {
+    console.error("Cancel error:", err);
+    toast.error("Failed to cancel booking");
+  }
+};
+
 
   const getStatusStyle = (status) => {
     if (!status) return "text-gray-500";
@@ -73,6 +87,34 @@ const MyBookings = () => {
         return "text-gray-500";
     }
   };
+
+  const handleUpdate = async (id) => {
+    if (!newDate) {
+      toast.error("Please enter a new date");
+      return;
+    }
+
+    try {
+      const res = await axios.put(`http://localhost:3000/bookings/${id}`, {
+        newDate,
+      });
+
+      toast.success("Booking updated!");
+      // update local state
+      setBookings((prev) =>
+        prev.map((booking) =>
+          booking._id === id ? { ...booking, stayDate: newDate } : booking
+        )
+      );
+
+      setEditingBookingId(null);
+      setNewDate("");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to update booking date");
+    }
+  };
+
 
   const getStatusIcon = (status) => {
     switch (status?.toLowerCase()) {
@@ -151,11 +193,12 @@ const MyBookings = () => {
             <thead className="bg-blue-600 text-white">
               <tr>
                 <th className="py-3 px-4 text-left">Room</th>
+                <th className="py-3  text-left"></th>
                 <th className="py-3 px-4 text-left">Location</th>
                 <th className="py-3 px-4 text-left">Date</th>
                 <th className="py-3 px-4 text-left">Price</th>
-                <th className="py-3 px-4 text-left">Status</th>
                 <th className="py-3 px-4 text-left">Actions</th>
+
               </tr>
             </thead>
             <tbody>
@@ -164,12 +207,27 @@ const MyBookings = () => {
                   key={booking._id}
                   className="border-b hover:bg-gray-50 transition duration-200"
                 >
+                  {/* Room with image */}
+                  <td className="py-4 px-4">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={booking.image}
+                        alt={booking.hotelName}
+                        className="w-20 h-20 rounded object-cover shadow"
+                      />
+                      <div>
+                        <div className="font-semibold text-base">{booking.hotelName}</div>
+                        <div className="text-xs text-gray-500">{booking.roomId}</div>
+                      </div>
+                    </div>
+                  </td>
                   <td className="py-4 px-4 font-medium">
                     <div className="font-semibold">{booking.roomTitle}</div>
                     {booking.roomType && (
                       <div className="text-xs text-gray-500 mt-1">{booking.roomType}</div>
                     )}
                   </td>
+
                   <td className="py-4 px-4">
                     <div className="flex items-center gap-2">
                       <FaMapMarkerAlt className="text-blue-500 flex-shrink-0" />
@@ -188,12 +246,7 @@ const MyBookings = () => {
                       <span className="text-sm">${booking.price.toLocaleString()}</span>
                     </div>
                   </td>
-                  <td className="py-4 px-4">
-                    <div className={`flex items-center gap-2 ${getStatusStyle(booking.status)}`}>
-                      {getStatusIcon(booking.status)}
-                      <span className="text-sm capitalize">{booking.status || "Unknown"}</span>
-                    </div>
-                  </td>
+
                   <td className="py-4 px-4">
                     <div className="flex gap-2">
                       <button
@@ -274,7 +327,7 @@ const MyBookings = () => {
                       )}
 
 
-
+                      {/* //cancel */}
                       <button
                         onClick={() => handleCancel(booking._id)}
                         disabled={booking.status?.toLowerCase() === "cancelled"}
@@ -282,6 +335,33 @@ const MyBookings = () => {
                       >
                         <FaTimesCircle /> Cancel
                       </button>
+
+                      {/* //update */}
+                      {editingBookingId === booking._id ? (
+                        <div className="flex flex-col gap-1">
+                          <input
+                            type="date"
+                            value={newDate}
+                            onChange={(e) => setNewDate(e.target.value)}
+                            className="border px-2 py-1 rounded"
+                          />
+                          <button
+                            onClick={() => handleUpdate(booking._id)}
+                            className="bg-green-600 text-white px-2 py-1 rounded text-sm"
+                          >
+                            Save Date
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => setEditingBookingId(booking._id)}
+                          disabled={booking.status?.toLowerCase() === "cancelled"}
+                          className="bg-green-500 text-white px-3 py-1 rounded text-sm"
+                        >
+                          Update
+                        </button>
+                      )}
+
                     </div>
                   </td>
                 </tr>

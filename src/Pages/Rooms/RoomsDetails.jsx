@@ -1,27 +1,22 @@
 import { NavLink, useLoaderData, useParams } from 'react-router';
-import { FiMapPin, FiCalendar, FiCheck, FiStar, FiChevronLeft, FiChevronRight, FiWifi, FiArrowRight, FiArrowLeft, FiDollarSign } from 'react-icons/fi';
-import { FaSwimmingPool, FaSpa, FaUtensils, FaSnowflake, FaUser, FaStar } from 'react-icons/fa';
-import { FiX, FiHome } from 'react-icons/fi';
-import React, { useContext, useEffect, useState } from 'react';
+import { FiMapPin, FiCalendar, FiCheck, FiStar, FiChevronLeft, FiChevronRight, FiWifi, FiArrowLeft, FiDollarSign, FiX, FiHome } from 'react-icons/fi';
+import { FaSwimmingPool, FaSpa, FaUtensils, FaSnowflake } from 'react-icons/fa';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import { Helmet } from 'react-helmet';
 import { AuthContext } from '../../Provider/AuthProvider';
 import axios from 'axios';
-
-
-
+import { toast } from 'react-toastify';
 
 const RoomsDetails = () => {
     const { user } = useContext(AuthContext);
-
     const detail = useLoaderData();
+    const { id } = useParams();
+    const [isAlreadyBooked, setIsAlreadyBooked] = useState(false);
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [isBookingDisabled, setIsBookingDisabled] = useState(false);
-    const [currentImageIndex, setCurrentImageIndex] = React.useState(0);
-    const [bookingData, setBookingData] = useState({
-        date: detail.stay_dates,
-    });
-    const { id } = useParams(); // this is the roomId
+    const [bookingData, setBookingData] = useState({ date: '' });
     const [reviews, setReviews] = useState([]);
-
+    const modalRef = useRef(null);
 
     const nextImage = () => {
         setCurrentImageIndex(prev => (prev + 1) % detail.image_urls.length);
@@ -32,14 +27,20 @@ const RoomsDetails = () => {
     };
 
     const handleDateChange = (e) => {
-        const { name, value } = e.target;
-        setBookingData(prev => ({ ...prev, [name]: value }));
+        setBookingData({ ...bookingData, date: e.target.value });
     };
-
-
 
     const handleBookingSubmit = async (e) => {
         e.preventDefault();
+        if (!bookingData.date) {
+            toast.error('Add the date')
+            return;
+        }
+
+        if (isAlreadyBooked) {
+            toast.error('Oops! This room is already booked 😬');
+            return;
+        }
 
         const finalBookingData = {
             hotelName: detail.hotel_name,
@@ -50,8 +51,8 @@ const RoomsDetails = () => {
             userName: user?.displayName || "Guest User",
             roomId: detail._id,
             image: detail.image_urls[0],
+            booked: true
         };
-
 
         try {
             const res = await fetch("http://localhost:3000/bookings", {
@@ -64,13 +65,25 @@ const RoomsDetails = () => {
             console.log("Booking saved:", result);
 
             setIsBookingDisabled(true);
-            document.getElementById('my_modal_1').close();
-            alert("Booking confirmed successfully!");
+            setIsAlreadyBooked(true);
+            if (modalRef.current) modalRef.current.close();
+            toast.success('Booking confirmed successfully!')
+
         } catch (err) {
             console.error("Booking failed:", err);
-            alert("Booking failed. Please try again.");
+            toast.error('Booking failed. Please try again.')
+
         }
     };
+
+    // TO CHECK BOOKING STATUS
+
+    useEffect(() => {
+        axios.get(`http://localhost:3000/bookings/room/${id}`)
+            .then(res => setIsAlreadyBooked(res.data.isBooked))
+            .catch(err => console.error(err));
+    }, [id]);
+
     useEffect(() => {
         axios.get(`http://localhost:3000/review/${id}`)
             .then(res => setReviews(res.data))
@@ -87,57 +100,32 @@ const RoomsDetails = () => {
                 <h1 className='text-2xl text-center mt-20 font-bold'>Room Details</h1>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-                    {/* Image Gallery */}
+                    {/* IMAGE GALLERY */}
                     <div className="relative h-96 bg-gray-200 rounded-t-2xl overflow-hidden">
-                        <img
-                            src={detail.image_urls[currentImageIndex]}
-                            alt={detail.hotel_name}
-                            className="w-full h-full object-cover"
-                        />
-
-                        {/* Navigation Arrows */}
-                        <button
-                            onClick={prevImage}
-                            className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-lg transition-all duration-200"
-                        >
-                            <FiChevronLeft className="h-6 w-6" />
-                        </button>
-                        <button
-                            onClick={nextImage}
-                            className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-lg transition-all duration-200"
-                        >
-                            <FiChevronRight className="h-6 w-6" />
-                        </button>
-                        {/* Image Indicators */}
+                        <img src={detail.image_urls[currentImageIndex]} alt={detail.hotel_name} className="w-full h-full object-cover" />
+                        <button onClick={prevImage} className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-lg"><FiChevronLeft /></button>
+                        <button onClick={nextImage} className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-lg"><FiChevronRight /></button>
                         <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-2">
                             {detail.image_urls.map((_, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => setCurrentImageIndex(index)}
-                                    className={`h-2 w-2 rounded-full transition-all duration-200 ${currentImageIndex === index ? 'bg-white w-6' : 'bg-white/50 w-2'}`}
-                                />
+                                <button key={index} onClick={() => setCurrentImageIndex(index)} className={`h-2 rounded-full ${currentImageIndex === index ? 'bg-white w-6' : 'bg-white/50 w-2'}`} />
                             ))}
                         </div>
-                        {/* Discount Badge */}
                         <div className="absolute top-4 right-4 bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold px-4 py-2 rounded-full shadow-lg flex items-center">
                             <FiStar className="mr-2" /> {detail.discount_info}
                         </div>
                     </div>
 
-                    {/* Hotel Info Section */}
+                    {/* HOTEL INFO */}
                     <div className="bg-white p-6 md:p-8 rounded-b-2xl shadow-xl">
                         <div className="flex flex-col md:flex-row justify-between">
-                            {/* Hotel Name and Rating */}
                             <div>
                                 <h1 className="text-3xl font-bold text-gray-900">{detail.hotel_name}</h1>
-                                <div className="flex items-center mt-2">
-                                    <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full flex items-center">
+                                <div className="flex items-center mt-2 text-gray-600">
+                                    <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full flex items-center mr-3">
                                         <span className="font-bold mr-1">{detail.rating}</span>
-                                        <FiStar className="fill-current" />
+                                        <FiStar />
                                     </div>
-                                    <span className="ml-3 text-gray-600">
-                                        ({detail.review_count.toLocaleString()} reviews)
-                                    </span>
+                                    <span>({detail.review_count.toLocaleString()} reviews)</span>
                                 </div>
                                 <div className="flex items-center mt-2 text-gray-600">
                                     <FiMapPin className="mr-1" />
@@ -145,76 +133,53 @@ const RoomsDetails = () => {
                                 </div>
                             </div>
 
-                            {/* Price Box */}
+                            {/* PRICE BOX */}
                             <div className="mt-4 md:mt-0 bg-blue-50 border border-blue-100 rounded-xl p-4 w-full md:w-64">
-                                <div className="space-y-3"></div>
-                                <p className="text-3xl font-bold text-gray-900 mt-1">
+                                <p className="text-3xl font-bold text-gray-900">
                                     {detail.currency} {detail.price_per_night.toLocaleString()}
                                 </p>
                                 <p className="text-gray-500 text-sm">per night</p>
                                 <p className="text-xs text-gray-500 mt-1">via {detail.booking_site}</p>
 
                                 <button
-                                    className={`btn w-full mt-4 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition-all duration-300 ${isBookingDisabled
-                                        ? 'bg-gray-400 cursor-not-allowed'
-                                        : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'
-                                        }`}
-                                    onClick={() => document.getElementById('my_modal_1').showModal()}
-                                    disabled={isBookingDisabled}
+                                    className={`btn w-full mt-4 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition-all duration-300 ${isBookingDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'}`}
+                                    onClick={() => {
+                                        if (!isAlreadyBooked) modalRef.current.showModal();
+                                    }}
+                                    disabled={isBookingDisabled || isBookingDisabled}
                                 >
-                                    {isBookingDisabled ? 'Booked!' : 'Book Now'}
+                                    {isAlreadyBooked ? 'Already Booked' : isBookingDisabled ? 'Booked!' : 'Book Now'}
                                 </button>
 
-                                <dialog id="my_modal_1" className="modal">
+                                {/* MODAL */}
+                                <dialog ref={modalRef} id="my_modal_1" className="modal">
                                     <div className="modal-box relative">
-                                        {/* Close Button (X) */}
                                         <form method="dialog">
-                                            <button className="btn btn-sm btn-circle absolute right-2 top-2 hover:bg-red-500 hover:text-white transition">
-                                                <FiX />
-                                            </button>
+                                            <button className="btn btn-sm btn-circle absolute right-2 top-2 hover:bg-red-500 hover:text-white"><FiX /></button>
                                         </form>
-
-                                        {/* Modal Content */}
-                                        <h3 className="font-bold text-2xl flex items-center gap-2 text-blue-700 mb-4">
-                                            <FiHome className="text-indigo-600" /> {detail.hotel_name}
-                                        </h3>
-                                        <p className="flex items-center gap-2 text-gray-600">
+                                        <h3 className="font-bold text-2xl flex items-center gap-2 text-blue-700 mb-4"><FiHome className="text-indigo-600" /> {detail.hotel_name}</h3>
+                                        <p className="flex items-center gap-2 text-gray-600 mb-2">
                                             <FiCalendar className="text-indigo-500" /> Date:
                                             <input
                                                 name="date"
                                                 type="date"
-                                                className="ml-2 px-3 py-1 border rounded-lg text-sm"
+                                                required
                                                 value={bookingData.date}
                                                 onChange={handleDateChange}
+                                                className="ml-2 px-3 py-1 border rounded-lg text-sm"
                                             />
                                         </p>
-
-                                        <div className="space-y-3 mt-4">
-                                            <p className="flex items-center gap-2 text-gray-600">
-                                                <FiMapPin className="text-red-500" /> Location: {detail.location}
-                                            </p>
-
-                                            <p className="flex items-center gap-2 text-gray-600">
-                                                <FiDollarSign className="text-green-600" /> Price per Night: <span className="font-semibold">{detail.price_per_night}</span>
-                                            </p>
-                                        </div>
-
-                                        {/* Modal Action Button */}
-                                        <div className="modal-action">
-                                            <form onSubmit={handleBookingSubmit} className="w-full">
-                                                <button
-                                                    type="submit"
-                                                    className={`w-full mt-4 text-white font-semibold py-3 px-4 rounded-lg shadow-lg transition-all duration-300 flex items-center justify-center gap-2 ${isBookingDisabled
-                                                        ? 'bg-gray-400 cursor-not-allowed opacity-60'
-                                                        : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 cursor-pointer'
-                                                        }`}
-                                                    disabled={isBookingDisabled}
-                                                >
-                                                    <FiCalendar className="text-white" />
-                                                    Confirm Booking
-                                                </button>
-                                            </form>
-                                        </div>
+                                        <p className="text-gray-600"><FiMapPin /> Location: {detail.location}</p>
+                                        <p className="text-gray-600 mt-2"><FiDollarSign /> Price: {detail.price_per_night}</p>
+                                        <form onSubmit={handleBookingSubmit}>
+                                            <button
+                                                type="submit"
+                                                className={`w-full mt-4 py-3 px-4 rounded-lg text-white font-semibold shadow-lg flex justify-center gap-2 items-center ${isBookingDisabled ? 'bg-gray-400 cursor-not-allowed opacity-60' : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'}`}
+                                                disabled={isBookingDisabled}
+                                            >
+                                                <FiCalendar /> Confirm Booking
+                                            </button>
+                                        </form>
                                     </div>
                                 </dialog>
 
@@ -225,124 +190,57 @@ const RoomsDetails = () => {
                             </div>
                         </div>
 
-                        {/* Facilities Section */}
+                        {/* FACILITIES */}
                         <div className="mt-8">
                             <h2 className="text-xl font-bold text-gray-900 mb-4">Facilities</h2>
                             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                                <div className="flex items-center p-3 bg-gray-50 rounded-lg">
-                                    <FiWifi className="text-blue-600 mr-2" />
-                                    <span>Free WiFi</span>
-                                </div>
-                                <div className="flex items-center p-3 bg-gray-50 rounded-lg">
-                                    <FaSwimmingPool className="text-blue-600 mr-2" />
-                                    <span>Swimming Pool</span>
-                                </div>
-                                <div className="flex items-center p-3 bg-gray-50 rounded-lg">
-                                    <FaSpa className="text-blue-600 mr-2" />
-                                    <span>Spa</span>
-                                </div>
-                                <div className="flex items-center p-3 bg-gray-50 rounded-lg">
-                                    <FaUtensils className="text-blue-600 mr-2" />
-                                    <span>Restaurant</span>
-                                </div>
-                                <div className="flex items-center p-3 bg-gray-50 rounded-lg">
-                                    <FaSnowflake className="text-blue-600 mr-2" />
-                                    <span>Air Conditioning</span>
-                                </div>
+                                <Facility icon={<FiWifi />} label="Free WiFi" />
+                                <Facility icon={<FaSwimmingPool />} label="Swimming Pool" />
+                                <Facility icon={<FaSpa />} label="Spa" />
+                                <Facility icon={<FaUtensils />} label="Restaurant" />
+                                <Facility icon={<FaSnowflake />} label="Air Conditioning" />
                             </div>
                         </div>
 
-                        {/* Description Section */}
+                        {/* DESCRIPTION */}
                         <div className="mt-8">
                             <h2 className="text-xl font-bold text-gray-900 mb-4">About {detail.hotel_name}</h2>
-                            <div className="prose max-w-none text-gray-600">
-                                <p>
-                                    Enjoy a luxurious experience at {detail.hotel_name}, located in the heart of {detail.location}.
-                                    This exceptional hotel offers world-class facilities, breathtaking views, and unparalleled service.
-                                </p>
-                                <p className="mt-4">
-                                    Our rooms are aesthetically designed with modern amenities and traditional touches,
-                                    providing the perfect blend of contemporary luxury and cultural heritage.
-                                </p>
-                            </div>
+                            <p className="text-gray-600">Enjoy a luxurious stay at {detail.hotel_name}, right in the heart of {detail.location}.</p>
                         </div>
 
-                        {/* Reviews Section */}
-                        {/* Reviews Section */}
+                        {/* REVIEWS */}
                         <div className="mt-8">
                             <h2 className="text-xl font-bold text-gray-900 mb-4">Guest Reviews</h2>
-                            <div className="bg-gray-50 rounded-xl p-6">
-                                <div className="flex items-center mb-4">
-                                    <div className="text-4xl font-bold mr-4">{detail.rating}/10</div>
-                                    <div>
-                                        <div className="flex items-center">
-                                            {[1, 2, 3, 4, 5].map((star) => (
-                                                <FiStar
-                                                    key={star}
-                                                    className={`h-5 w-5 ${star <= Math.floor(detail.rating / 2)
-                                                        ? 'text-yellow-400 fill-current'
-                                                        : 'text-gray-300'
-                                                        }`}
-                                                />
-                                            ))}
-                                        </div>
-                                        <p className="text-gray-600 mt-1">
-                                            {
-                                                reviews.length === 0
-                                                    ? <p class="text-gray-400 italic text-base font-light py-2 px-3 rounded-lg bg-gray-50 inline-flex items-center">
-                                                        <span class="mr-2 text-lg">No reviews found yet</span>
-                                                    </p>
-                                                    : <p>Based on {reviews.length} reviews</p>
-                                            }
-
-                                        </p>
-                                    </div>
-                                </div>
-
-                                {/* Dynamic Reviews Mapping */}
-                                <div className="grid md:grid-cols-2 gap-4 mt-6">
+                            {reviews.length === 0 ? (
+                                <p className="text-gray-400 italic text-base font-light py-2 px-3 bg-gray-50 rounded-lg inline-flex items-center">
+                                    No reviews found yet
+                                </p>
+                            ) : (
+                                <div className="grid md:grid-cols-2 gap-4 mt-4">
                                     {reviews.map((review) => (
                                         <div key={review._id} className="bg-white p-4 rounded-lg shadow-sm">
                                             <div className="flex items-center">
-                                                <div className="flex items-center">
-                                                    {[1, 2, 3, 4, 5].map((star) => (
-                                                        <FiStar
-                                                            key={star}
-                                                            className={`h-4 w-4 ${star <= review.rating
-                                                                ? 'text-yellow-400 fill-current'
-                                                                : 'text-gray-300'
-                                                                }`}
-                                                        />
-                                                    ))}
-                                                </div>
+                                                {[1, 2, 3, 4, 5].map(star => (
+                                                    <FiStar key={star} className={`h-4 w-4 ${star <= review.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} />
+                                                ))}
                                                 <span className="ml-2 text-sm font-medium">
-                                                    {review.rating >= 4.5
-                                                        ? "Perfect"
-                                                        : review.rating >= 3
-                                                            ? "Great"
-                                                            : "Okay"}
+                                                    {review.rating >= 4.5 ? "Perfect" : review.rating >= 3 ? "Great" : "Okay"}
                                                 </span>
                                             </div>
                                             <p className="mt-2 text-gray-600">"{review.comment}"</p>
-                                            <p className="mt-2 text-sm text-gray-500">
-                                                - {review.user || "Anonymous"}, {new Date(review.timestamp).toLocaleDateString('en-US', {
-                                                    month: 'long',
-                                                    year: 'numeric',
-                                                })}
-                                            </p>
+                                            <p className="mt-1 text-sm text-gray-500">- {review.user || "Anonymous"}, {new Date(review.timestamp).toLocaleDateString()}</p>
                                         </div>
                                     ))}
                                 </div>
-                            </div>
+                            )}
                         </div>
-
                     </div>
                 </div>
+
                 <div className='text-center mb-5'>
-                    <NavLink className="text-center" to="/rooms">
-                        <button className='btn bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white'>
-                            <FiArrowLeft className="ml-2 group-hover:translate-x-1 transition-transform duration-300" />
-                            See Another Rooms
+                    <NavLink to="/rooms">
+                        <button className='btn bg-gradient-to-r from-blue-600 to-indigo-600 text-white'>
+                            <FiArrowLeft /> See Another Rooms
                         </button>
                     </NavLink>
                 </div>
@@ -350,5 +248,12 @@ const RoomsDetails = () => {
         </>
     );
 };
+
+const Facility = ({ icon, label }) => (
+    <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+        {React.cloneElement(icon, { className: "text-blue-600 mr-2" })}
+        <span>{label}</span>
+    </div>
+);
 
 export default RoomsDetails;

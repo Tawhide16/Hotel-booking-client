@@ -66,7 +66,7 @@ const SixCard = () => {
 
   return (
     <div className="mx-auto justify-items-center my-10">
-      <h1 className='text-center text-4xl font-bold my-8'>Most Rated Rooms</h1>
+      <h1 className='text-center text-4xl font-bold my-8'>Featured Rooms</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mx-4">
         {rooms.map(room => {
           const images = Array.isArray(room.image_urls) && room.image_urls.length > 0
@@ -81,9 +81,8 @@ const SixCard = () => {
           const totalImages = images.length;
 
           return (
-            <Link
-              to={`/rooms/${room._id}`}
-              key={room._id}
+            <div
+            
               className=" rounded-2xl overflow-hidden border border-gray-100 shadow-xl hover:shadow-2xl transition-all duration-300 bg-white transform hover:-translate-y-1"
             >
               {/* Image Carousel */}
@@ -204,8 +203,14 @@ const SixCard = () => {
                     <FiCalendar className="mr-1" /> {room.stay_dates}
                   </span>
                 </div>
+                <Link
+              to={`/rooms/${room._id}`}
+              key={room._id}>
+                <button className='btn w-full p-4 text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'>book now</button>
+              </Link>
+                
               </div>
-            </Link>
+            </div>
           );
         })}
       </div>
