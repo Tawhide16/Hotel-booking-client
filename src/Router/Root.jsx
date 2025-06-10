@@ -15,6 +15,7 @@ import RoomsDetails from "../Pages/Rooms/RoomsDetails";
 import Faq from "../Component/Home/Faq";
 
 import ErrorPage from '../Pages/ErrorPage';
+import PriceBox from "../Pages/Rooms/PriceBox";
 
 export const router = createBrowserRouter([
   {
@@ -52,6 +53,12 @@ export const router = createBrowserRouter([
           path:"/my-bookings",
           element: <PrivetRoute>
             <MyBookings></MyBookings>
+          </PrivetRoute>
+        },
+        {
+          path:"/price-box",
+          element: <PrivetRoute>
+            <PriceBox></PriceBox>
           </PrivetRoute>
         }
     ],

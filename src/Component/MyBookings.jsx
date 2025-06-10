@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import moment from "moment";
+
 import { FaStar, FaTimes, FaUser } from "react-icons/fa";
 import {
   FaMapMarkerAlt,
@@ -26,13 +28,18 @@ const MyBookings = () => {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("")
 
+
   useEffect(() => {
     const fetchBookings = async () => {
       if (!user?.email) return;
 
       try {
         setLoading(true);
-        const res = await axios.get(`http://localhost:3000/bookings?email=${user.email}`);
+        const res = await axios.get(`http://localhost:3000/bookings?email=${user.email}`,{
+          headers:{
+            Authorization:`Bearer ${user.accessToken}`
+          }
+        });
         setBookings(res.data);
         setError(null);
       } catch (err) {
@@ -47,31 +54,44 @@ const MyBookings = () => {
     fetchBookings();
   }, [user]);
 
-const handleCancel = async (id) => {
-  const result = await Swal.fire({
-    title: "Are you sure?",
-    text: "You won't be able to revert this!",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#3085d6",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Yes, delete it!"
-  });
+  const handleCancel = async (id) => {
 
-  if (!result.isConfirmed) return;
+    // Parse booking date
+    const bookingDate = moment(stayDate, "YYYY-MM-DD");
+    const today = moment().startOf('day'); // Today at midnight
 
-  try {
-    const res = await axios.delete(`http://localhost:3000/bookings/${id}`);
-    if (res.data.deletedCount > 0) {
-      await Swal.fire("Deleted!", "Your booking has been cancelled.", "success");
-      toast.success("Booking cancelled successfully!");
-      setBookings((prev) => prev.filter((b) => b._id !== id));
+    // Cancellation deadline = bookingDate - 1 day
+    const cancelDeadline = bookingDate.clone().subtract(1, 'day');
+
+    if (today.isAfter(cancelDeadline)) {
+      toast.error("You can only cancel bookings at least 1 day before the booked date.");
+      return;
     }
-  } catch (err) {
-    console.error("Cancel error:", err);
-    toast.error("Failed to cancel booking");
-  }
-};
+
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      const res = await axios.delete(`http://localhost:3000/bookings/${id}`);
+      if (res.data.deletedCount > 0) {
+        await Swal.fire("Deleted!", "Your booking has been cancelled.", "success");
+        toast.success("Booking cancelled successfully!");
+        setBookings((prev) => prev.filter((b) => b._id !== id));
+      }
+    } catch (err) {
+      console.error("Cancel error:", err);
+      toast.error("Failed to cancel booking");
+    }
+  };
 
 
   const getStatusStyle = (status) => {
@@ -217,7 +237,7 @@ const handleCancel = async (id) => {
                       />
                       <div>
                         <div className="font-semibold text-base">{booking.hotelName}</div>
-                        <div className="text-xs text-gray-500">{booking.roomId}</div>
+
                       </div>
                     </div>
                   </td>
@@ -330,7 +350,16 @@ const handleCancel = async (id) => {
                       {/* //cancel */}
                       <button
                         onClick={() => handleCancel(booking._id)}
-                        disabled={booking.status?.toLowerCase() === "cancelled"}
+                        disabled={booking.status?.toLowerCase() === "cancelled" ||
+                          moment().isAfter(moment(booking.stayDate, "YYYY-MM-DD").subtract(1, 'day'))}
+
+
+                        title={
+                          moment().isAfter(moment(booking.stayDate, "YYYY-MM-DD").subtract(1, 'day'))
+                            ? "Cancellation period expired"
+                            : undefined
+                        }
+
                         className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm flex items-center gap-1 transition disabled:bg-gray-300 disabled:cursor-not-allowed"
                       >
                         <FaTimesCircle /> Cancel

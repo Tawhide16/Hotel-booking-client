@@ -6,6 +6,7 @@ import { Helmet } from 'react-helmet';
 import { AuthContext } from '../../Provider/AuthProvider';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import PriceBox from './PriceBox';
 
 const RoomsDetails = () => {
     const { user } = useContext(AuthContext);
