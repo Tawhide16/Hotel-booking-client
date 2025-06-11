@@ -1,4 +1,5 @@
 // RoomsCard.jsx
+import axios from "axios";
 import React, { useEffect, useState } from "react";
 import {
   FiMapPin,
@@ -8,24 +9,33 @@ import {
   FiChevronLeft,
   FiChevronRight,
 } from "react-icons/fi";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
-/*
-  ⚠️  এই কম্পোনেন্ট এখন আর roomsPromise নেয় না!
-      কারণ রুম আমরা নিজেরাই API থেকে ফেচ করছি।
-*/
+
 
 const RoomsCard = () => {
-  // সব রুম
+
   const [rooms, setRooms] = useState([]);
-  // প্রাইস রেঞ্জ অবজেক্ট
+
+  const [reviews, setReviews] = useState([]);
+
+  const { id } = useParams();
+
   const [priceRange, setPriceRange] = useState({ min: 0, max: Infinity });
-  // লোডার
+
   const [loading, setLoading] = useState(true);
-  // ইমেজ কারোসেল ইনডেক্স
+
   const [currentImageIndices, setCurrentImageIndices] = useState({});
 
-  /* ----------------- রুম ফেচ ----------------- */
+ /* -----------------  revewi data ----------------- */
+
+   useEffect(() => {
+    axios.get(`http://localhost:3000/review/${id}`)
+      .then(res => setReviews(res.data))
+      .catch(err => console.error(err));
+  }, [id]);
+
+  /* ----------------- fetch rooms ----------------- */
 
   console.log(rooms.map(r => r.
     price_per_night));
@@ -34,7 +44,7 @@ const RoomsCard = () => {
       try {
         setLoading(true);
 
-        // query param বানাচ্ছি
+
         const params = new URLSearchParams();
         if (!(priceRange.min === 0 && priceRange.max === Infinity)) {
           params.append("minPrice", priceRange.min);
@@ -57,7 +67,7 @@ const RoomsCard = () => {
   }, [priceRange]);
   /* ------------------------------------------- */
 
-  /* ---------- কারোসেল হ্যান্ডলার ---------- */
+  /* ---------- carosal handel ---------- */
   const handleNextImage = (roomId, total, e) => {
     e.stopPropagation();
     setCurrentImageIndices((prev) => ({
@@ -85,7 +95,6 @@ const RoomsCard = () => {
 
   return (
     <>
-      {/* ---------- ড্রপডাউন ফিল্টার ---------- */}
       <div className="flex flex-col mr-10 mb-6 items-end">
         <label className="block text-sm font-medium text-gray-700 text-center mb-2">
           Filter by Price Range
@@ -114,7 +123,8 @@ const RoomsCard = () => {
 
       </div>
 
-      {/* ---------- রুম কার্ড সেকশন ---------- */}
+      {/* ---------- room card ---------- */}
+
       {loading ? (
         <p className="text-center my-10">Loading rooms...</p>
       ) : rooms.length === 0 ? (
@@ -141,7 +151,7 @@ const RoomsCard = () => {
                   key={room._id}
                   className="rounded-2xl overflow-hidden border border-gray-100 shadow-xl hover:shadow-2xl transition-all duration-300 bg-white transform hover:-translate-y-1"
                 >
-                  {/* ---------- ইমেজ কারোসেল ---------- */}
+                  {/* ---------- image carosol ---------- */}
                   <div className="relative h-56 bg-gray-200 overflow-hidden">
                     <img
                       src={images[currentIndex]}
@@ -153,7 +163,7 @@ const RoomsCard = () => {
                       }}
                     />
 
-                    {/* কারোসেল কন্ট্রোল */}
+                    {/* carosol component */}
                     <button
                       onClick={(e) =>
                         handlePrevImage(room._id, totalImages, e)
@@ -171,7 +181,7 @@ const RoomsCard = () => {
                       <FiChevronRight className="h-4 w-4" />
                     </button>
 
-                    {/* ইন্ডিকেটর ডট */}
+
                     <div className="absolute bottom-3 left-0 right-0 flex justify-center space-x-2">
                       {images.map((_, index) => (
                         <button
@@ -187,15 +197,15 @@ const RoomsCard = () => {
                       ))}
                     </div>
 
-                    {/* ডিসকাউন্ট ট্যাগ */}
+
                     <div className="absolute top-3 right-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg flex items-center">
                       <FiStar className="mr-1" /> {room.discount_info}
                     </div>
                   </div>
 
-                  {/* ---------- টেক্সট কন্টেন্ট ---------- */}
+
                   <div className="p-5">
-                    {/* হোটেল নাম ও রেটিং */}
+
                     <div className="flex justify-between items-start mb-2">
                       <h1 className="text-xl font-bold text-gray-800 truncate pr-2">
                         {room.hotel_name}
@@ -208,13 +218,13 @@ const RoomsCard = () => {
                       </div>
                     </div>
 
-                    {/* লোকেশন */}
+
                     <div className="flex items-center text-gray-500 text-sm mb-3">
                       <FiMapPin className="mr-1 text-gray-400" />
                       <span>{room.location}</span>
                     </div>
 
-                    {/* ফ্যাসিলিটি ট্যাগ */}
+
                     <div className="flex flex-wrap gap-2 mb-4">
                       {["Free WiFi", "Pool", "Spa", "Restaurant", "AC"].map(
                         (facility) => (
@@ -228,7 +238,7 @@ const RoomsCard = () => {
                       )}
                     </div>
 
-                    {/* রিভিউ কাউন্ট */}
+
                     <div className="flex items-center text-sm text-gray-600 mb-4">
                       <div className="flex items-center mr-3">
                         {[...Array(5)].map((_, i) => (
@@ -242,11 +252,11 @@ const RoomsCard = () => {
                         ))}
                       </div>
                       <span>
-                        ({room.review_count?.toLocaleString() || 0} reviews)
+                        ({reviews.length?.toLocaleString() || 0} reviews)
                       </span>
                     </div>
 
-                    {/* দাম সেকশন */}
+
                     <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 mb-3 border border-blue-100">
                       <div className="flex justify-between items-end">
                         <div>
@@ -267,7 +277,7 @@ const RoomsCard = () => {
                       </div>
                     </div>
 
-                    {/* ক্যানসেলেশন এবং স্টে ডেট */}
+
                     <div className="flex justify-between items-center text-sm mb-5">
                       <span className="text-green-600 font-medium flex items-center">
                         <FiCheck className="mr-1" />{" "}

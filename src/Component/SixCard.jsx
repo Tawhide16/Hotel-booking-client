@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import {
   FiMapPin,
@@ -7,13 +8,22 @@ import {
   FiChevronLeft,
   FiChevronRight
 } from 'react-icons/fi';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 const SixCard = () => {
   const [rooms, setRooms] = useState([]);
+  const [reviews, setReviews] = useState([]);
+  const { id } = useParams();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentImageIndices, setCurrentImageIndices] = useState({});
+
+
+  useEffect(() => {
+    axios.get(`http://localhost:3000/review/${id}`)
+      .then(res => setReviews(res.data))
+      .catch(err => console.error(err));
+  }, [id]);
 
   useEffect(() => {
     async function fetchRooms() {
@@ -72,17 +82,17 @@ const SixCard = () => {
           const images = Array.isArray(room.image_urls) && room.image_urls.length > 0
             ? room.image_urls
             : [
-                room.image_url,
-                'https://i.ibb.co/35X8S8H7/francesca-saraco-d-S27-XGg-Ry-Q-unsplash.jpg',
-                'https://source.unsplash.com/random/800x600/?luxury,hotel,room'
-              ].filter(Boolean);
+              room.image_url,
+              'https://i.ibb.co/35X8S8H7/francesca-saraco-d-S27-XGg-Ry-Q-unsplash.jpg',
+              'https://source.unsplash.com/random/800x600/?luxury,hotel,room'
+            ].filter(Boolean);
 
           const currentIndex = currentImageIndices[room._id] || 0;
           const totalImages = images.length;
 
           return (
             <div
-            
+
               className=" rounded-2xl overflow-hidden border border-gray-100 shadow-xl hover:shadow-2xl transition-all duration-300 bg-white transform hover:-translate-y-1"
             >
               {/* Image Carousel */}
@@ -116,9 +126,8 @@ const SixCard = () => {
                     <button
                       key={index}
                       onClick={(e) => handleIndicatorClick(room._id, index, e)}
-                      className={`h-2 rounded-full transition-all duration-200 ${
-                        currentIndex === index ? 'bg-white w-4' : 'bg-white/50 w-2'
-                      }`}
+                      className={`h-2 rounded-full transition-all duration-200 ${currentIndex === index ? 'bg-white w-4' : 'bg-white/50 w-2'
+                        }`}
                     />
                   ))}
                 </div>
@@ -167,13 +176,12 @@ const SixCard = () => {
                     {[...Array(5)].map((_, i) => (
                       <FiStar
                         key={i}
-                        className={`h-4 w-4 ${
-                          i < Math.floor(room.rating) ? 'text-yellow-400 fill-current' : 'text-gray-300'
-                        }`}
+                        className={`h-4 w-4 ${i < Math.floor(room.rating) ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                          }`}
                       />
                     ))}
                   </div>
-                  <span>({room.review_count.toLocaleString()} reviews)</span>
+                  <span>({reviews.length.toLocaleString()} reviews)</span>
                 </div>
 
                 {/* Price Section */}
@@ -204,11 +212,11 @@ const SixCard = () => {
                   </span>
                 </div>
                 <Link
-              to={`/rooms/${room._id}`}
-              key={room._id}>
-                <button className='btn w-full p-4 text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'>book now</button>
-              </Link>
-                
+                  to={`/rooms/${room._id}`}
+                  key={room._id}>
+                  <button className='btn w-full p-4 text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'>book now</button>
+                </Link>
+
               </div>
             </div>
           );

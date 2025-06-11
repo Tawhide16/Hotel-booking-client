@@ -4,6 +4,9 @@ import { NavLink } from 'react-router';
 
 import { AuthContext } from '../Provider/AuthProvider';
 import { Tooltip } from 'react-tooltip';
+import { FaHome } from 'react-icons/fa';
+import { MdBookmarkAdded, MdOutlineKingBed } from 'react-icons/md';
+import { IoBed } from 'react-icons/io5';
 // import { Tooltip } from 'react-tooltip';
 
 
@@ -42,6 +45,7 @@ const NavBar = () => {
             isActive ? "text-[#000] font-bold underline " : "main"
           }
         >
+          <FaHome size={17} />
           Home
         </NavLink>
       </li>
@@ -52,6 +56,7 @@ const NavBar = () => {
             isActive ? "text-[#000] font-bold underline" : "main"
           }
         >
+          <IoBed   size={18}/>
           Room's
         </NavLink>
       </li>
@@ -62,6 +67,7 @@ const NavBar = () => {
             isActive ? "text-[#000] font-bold underline" : "main"
           }
         >
+          <MdBookmarkAdded size={18} />
           My Bookings
         </NavLink>
       </li>
@@ -89,7 +95,7 @@ const NavBar = () => {
           </div>
         </div>
         <div className="navbar-center hidden lg:flex ">
-          <ul className="menu menu-horizontal px-1 ">
+          <ul className="menu menu-horizontal px-1 gap-5 ">
             {Links}
           </ul>
         </div>

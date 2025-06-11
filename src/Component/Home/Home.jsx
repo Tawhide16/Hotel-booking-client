@@ -6,6 +6,7 @@ import { Map, Marker } from 'pigeon-maps';
 import { Helmet } from 'react-helmet';
 import SixCard from '../SixCard';
 import SpecialOffersModal from '../SpecialOffersModal';
+import UserReview from '../UserReview';
 
 const Home = () => {
   const roomsPromise = fetch("http://localhost:3000/rooms").then(res => res.json());
@@ -20,6 +21,7 @@ const Home = () => {
       <div>
         <Banner />
         <SixCard roomsPromise={roomsPromise} />
+        <UserReview></UserReview>
         <OurService />
         <Faq />
         <div className='px-5 md:px-7 lg:px-28 rounded-[12px] pb-5 lg:py-5'>

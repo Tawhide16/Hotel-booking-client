@@ -126,7 +126,7 @@ const RoomsDetails = () => {
                                         <span className="font-bold mr-1">{detail.rating}</span>
                                         <FiStar />
                                     </div>
-                                    <span>({detail.review_count.toLocaleString()} reviews)</span>
+                                    <span>({reviews.length.toLocaleString()} reviews)</span>
                                 </div>
                                 <div className="flex items-center mt-2 text-gray-600">
                                     <FiMapPin className="mr-1" />
