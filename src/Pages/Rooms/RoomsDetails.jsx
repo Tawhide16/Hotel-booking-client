@@ -7,8 +7,11 @@ import { AuthContext } from '../../Provider/AuthProvider';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import PriceBox from './PriceBox';
+import { useNavigate } from 'react-router';
+
 
 const RoomsDetails = () => {
+      const [bookings, setBookings] = useState([]);
     const { user } = useContext(AuthContext);
     const detail = useLoaderData();
     const { id } = useParams();
@@ -18,6 +21,10 @@ const RoomsDetails = () => {
     const [bookingData, setBookingData] = useState({ date: '' });
     const [reviews, setReviews] = useState([]);
     const modalRef = useRef(null);
+    const navigate = useNavigate();
+
+
+    console.log(isAlreadyBooked);
 
     const nextImage = () => {
         setCurrentImageIndex(prev => (prev + 1) % detail.image_urls.length);
@@ -77,6 +84,33 @@ const RoomsDetails = () => {
         }
     };
 
+
+    useEffect(() => {
+    const fetchBookings = async () => {
+        try {
+            const token = await user.getIdToken();
+
+            const res = await axios.get("http://localhost:3000/bookings", {
+                params: { email: user.email },
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            console.log("Fetched bookings:", res.data);
+            setBookings(res.data);
+        } catch (err) {
+            console.error("Error fetching bookings:", err);
+        }
+    };
+
+    if (user) {
+        fetchBookings();
+    }
+}, [user]);
+
+
+
     // TO CHECK BOOKING STATUS
 
     useEffect(() => {
@@ -90,7 +124,6 @@ const RoomsDetails = () => {
             .then(res => setReviews(res.data))
             .catch(err => console.error(err));
     }, [id]);
-
     return (
         <>
             <Helmet>
@@ -98,6 +131,7 @@ const RoomsDetails = () => {
                 <meta name="description" content="Helmet application" />
             </Helmet>
             <div>
+                
                 <h1 className='text-2xl text-center mt-20 font-bold'>Room Details</h1>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
@@ -145,9 +179,15 @@ const RoomsDetails = () => {
                                 <button
                                     className={`btn w-full mt-4 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition-all duration-300 ${isBookingDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'}`}
                                     onClick={() => {
+                                        if (!user){
+                                            toast.info('Please login first to book a room!')
+                                            navigate('/login');
+                                            return;
+                                        }
                                         if (!isAlreadyBooked) modalRef.current.showModal();
                                     }}
-                                    disabled={isBookingDisabled || isBookingDisabled}
+                                   
+                                    disabled={isBookingDisabled}
                                 >
                                     {isAlreadyBooked ? 'Already Booked' : isBookingDisabled ? 'Booked!' : 'Book Now'}
                                 </button>

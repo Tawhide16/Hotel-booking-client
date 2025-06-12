@@ -17,7 +17,8 @@ const Faq = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className='bg-white-300 mx-10'>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 ">
       <section className="faq-section">
         <h2 className="text-4xl font-bold text-center text-indigo-700 mb-4 dark:text-indigo-500">
           Frequently Asked Questions
@@ -63,6 +64,7 @@ const Faq = () => {
           )}
         </div>
       </section>
+    </div>
     </div>
   );
 };

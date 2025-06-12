@@ -17,7 +17,7 @@ import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 
 const MyBookings = () => {
-  const [newDate, setNewDate] = useState(""); // for new date input
+  const [newDate, setNewDate] = useState("");
   const [editingBookingId, setEditingBookingId] = useState(null);
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -26,8 +26,7 @@ const MyBookings = () => {
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [rating, setRating] = useState(0);
-  const [comment, setComment] = useState("")
-
+  const [comment, setComment] = useState("");
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -35,11 +34,14 @@ const MyBookings = () => {
 
       try {
         setLoading(true);
-        const res = await axios.get(`http://localhost:3000/bookings?email=${user.email}`,{
-          headers:{
-            Authorization:`Bearer ${user.accessToken}`
+        const res = await axios.get(
+          `http://localhost:3000/bookings?email=${user.email}`,
+          {
+            headers: {
+              Authorization: `Bearer ${user.accessToken}`,
+            },
           }
-        });
+        );
         setBookings(res.data);
         setError(null);
       } catch (err) {
@@ -54,14 +56,11 @@ const MyBookings = () => {
     fetchBookings();
   }, [user]);
 
-  const handleCancel = async (id) => {
-
-    // Parse booking date
+  const handleCancel = async (id, stayDate) => {
     const bookingDate = moment(stayDate, "YYYY-MM-DD");
-    const today = moment().startOf('day'); // Today at midnight
+    const today = moment().startOf("day");
 
-    // Cancellation deadline = bookingDate - 1 day
-    const cancelDeadline = bookingDate.clone().subtract(1, 'day');
+    const cancelDeadline = bookingDate.clone().subtract(1, "day");
 
     if (today.isAfter(cancelDeadline)) {
       toast.error("You can only cancel bookings at least 1 day before the booked date.");
@@ -75,7 +74,7 @@ const MyBookings = () => {
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!"
+      confirmButtonText: "Yes, delete it!",
     });
 
     if (!result.isConfirmed) return;
@@ -93,21 +92,6 @@ const MyBookings = () => {
     }
   };
 
-
-  const getStatusStyle = (status) => {
-    if (!status) return "text-gray-500";
-    switch (status.toLowerCase()) {
-      case "confirmed":
-        return "text-green-600";
-      case "pending":
-        return "text-yellow-500";
-      case "cancelled":
-        return "text-red-500";
-      default:
-        return "text-gray-500";
-    }
-  };
-
   const handleUpdate = async (id) => {
     if (!newDate) {
       toast.error("Please enter a new date");
@@ -120,7 +104,6 @@ const MyBookings = () => {
       });
 
       toast.success("Booking updated!");
-      // update local state
       setBookings((prev) =>
         prev.map((booking) =>
           booking._id === id ? { ...booking, stayDate: newDate } : booking
@@ -132,20 +115,6 @@ const MyBookings = () => {
     } catch (err) {
       console.error(err);
       toast.error("Failed to update booking date");
-    }
-  };
-
-
-  const getStatusIcon = (status) => {
-    switch (status?.toLowerCase()) {
-      case "confirmed":
-        return <FaCheckCircle className="text-green-500" />;
-      case "pending":
-        return <FaSpinner className="text-yellow-500 animate-spin" />;
-      case "cancelled":
-        return <FaTimesCircle className="text-red-500" />;
-      default:
-        return <FaExclamationCircle className="text-gray-500" />;
     }
   };
 
@@ -164,9 +133,10 @@ const MyBookings = () => {
       return;
     }
 
-    axios.post("http://localhost:3000/review", reviewData)
-      .then((res) => {
-        toast.success("Submit succfully");
+    axios
+      .post("http://localhost:3000/review", reviewData)
+      .then(() => {
+        toast.success("Submit successfully");
         setShowModal(false);
         setComment("");
         setRating(0);
@@ -174,9 +144,34 @@ const MyBookings = () => {
       .catch((err) => {
         console.error(err);
       });
-
   };
 
+  const getStatusStyle = (status) => {
+    if (!status) return "text-gray-500";
+    switch (status.toLowerCase()) {
+      case "confirmed":
+        return "text-green-600";
+      case "pending":
+        return "text-yellow-500";
+      case "cancelled":
+        return "text-red-500";
+      default:
+        return "text-gray-500";
+    }
+  };
+
+  const getStatusIcon = (status) => {
+    switch (status?.toLowerCase()) {
+      case "confirmed":
+        return <FaCheckCircle className="text-green-500" />;
+      case "pending":
+        return <FaSpinner className="text-yellow-500 animate-spin" />;
+      case "cancelled":
+        return <FaTimesCircle className="text-red-500" />;
+      default:
+        return <FaExclamationCircle className="text-gray-500" />;
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -218,16 +213,11 @@ const MyBookings = () => {
                 <th className="py-3 px-4 text-left">Date</th>
                 <th className="py-3 px-4 text-left">Price</th>
                 <th className="py-3 px-4 text-left">Actions</th>
-
               </tr>
             </thead>
             <tbody>
               {bookings.map((booking) => (
-                <tr
-                  key={booking._id}
-                  className="border-b hover:bg-gray-50 transition duration-200"
-                >
-                  {/* Room with image */}
+                <tr key={booking._id} className="border-b hover:bg-gray-50 transition duration-200">
                   <td className="py-4 px-4">
                     <div className="flex items-center gap-3">
                       <img
@@ -237,7 +227,6 @@ const MyBookings = () => {
                       />
                       <div>
                         <div className="font-semibold text-base">{booking.hotelName}</div>
-
                       </div>
                     </div>
                   </td>
@@ -247,7 +236,6 @@ const MyBookings = () => {
                       <div className="text-xs text-gray-500 mt-1">{booking.roomType}</div>
                     )}
                   </td>
-
                   <td className="py-4 px-4">
                     <div className="flex items-center gap-2">
                       <FaMapMarkerAlt className="text-blue-500 flex-shrink-0" />
@@ -266,106 +254,30 @@ const MyBookings = () => {
                       <span className="text-sm">${booking.price.toLocaleString()}</span>
                     </div>
                   </td>
-
                   <td className="py-4 px-4">
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 flex-wrap">
                       <button
                         onClick={() => {
                           setSelectedBooking(booking);
                           setShowModal(true);
                         }}
-                        className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-sm transition"
+                        className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-sm"
                         disabled={booking.status?.toLowerCase() === "cancelled"}
                       >
                         Leave Review
                       </button>
 
-
-                      {showModal && (
-                        <div className="fixed inset-0 z-50 flex items-center justify-center
-                  bg-gray-200/40 backdrop-blur-sm">   {/* ← new tint + blur */}
-                          <div className="relative w-[90%] max-w-md rounded-xl bg-white p-6 shadow-2xl">
-
-                            {/* Close button */}
-                            <button
-                              onClick={() => setShowModal(false)}
-                              className="absolute top-3 right-3 text-2xl text-gray-400 transition hover:text-red-500"
-                            >
-                              <FaTimes />
-                            </button>
-
-                            {/* Title */}
-                            <h3 className="mb-4 text-center text-2xl font-bold text-gray-800">📝 Leave a Review</h3>
-
-                            {/* Read‑only user name */}
-                            <div className="my-3">
-                              <label className="mb-1 flex items-center gap-1 text-sm text-gray-600">
-                                <FaUser className="text-blue-500" /> User Name
-                              </label>
-                              <input
-                                type="text"
-                                value={user?.displayName || "Anonymous"}
-                                readOnly
-                                className="w-full cursor-not-allowed rounded-md border border-gray-300 bg-gray-100 px-3 py-2"
-                              />
-                            </div>
-
-                            {/* Rating */}
-                            <div className="my-3">
-                              <label className="mb-1 block text-sm text-gray-600">⭐ Rating (1–5)</label>
-                              <input
-                                type="number"
-                                min="1"
-                                max="5"
-                                value={rating}
-                                onChange={(e) => setRating(e.target.value)}
-                                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                placeholder="Ex: 4"
-                              />
-                            </div>
-
-                            {/* Comment */}
-                            <div className="my-3">
-                              <label className="mb-1 block text-sm text-gray-600">✍️ Your Comment</label>
-                              <textarea
-                                value={comment}
-                                onChange={(e) => setComment(e.target.value)}
-                                className="h-24 w-full resize-none rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                placeholder="Write your feedback here..."
-                              />
-                            </div>
-
-                            {/* Submit */}
-                            <button
-                              onClick={handleReviewSubmit}
-                              className="mt-4 w-full rounded-lg bg-green-600 px-4 py-2 font-semibold text-white transition hover:bg-green-700"
-                            >
-                              Submit Review
-                            </button>
-                          </div>
-                        </div>
-                      )}
-
-
-                      {/* //cancel */}
                       <button
-                        onClick={() => handleCancel(booking._id)}
-                        disabled={booking.status?.toLowerCase() === "cancelled" ||
-                          moment().isAfter(moment(booking.stayDate, "YYYY-MM-DD").subtract(1, 'day'))}
-
-
-                        title={
-                          moment().isAfter(moment(booking.stayDate, "YYYY-MM-DD").subtract(1, 'day'))
-                            ? "Cancellation period expired"
-                            : undefined
+                        onClick={() => handleCancel(booking._id, booking.stayDate)}
+                        disabled={
+                          booking.status?.toLowerCase() === "cancelled" ||
+                          moment().isAfter(moment(booking.stayDate, "YYYY-MM-DD").subtract(1, "day"))
                         }
-
-                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm flex items-center gap-1 transition disabled:bg-gray-300 disabled:cursor-not-allowed"
+                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm disabled:bg-gray-300 disabled:cursor-not-allowed"
                       >
-                        <FaTimesCircle /> Cancel
+                        Cancel
                       </button>
 
-                      {/* //update */}
                       {editingBookingId === booking._id ? (
                         <div className="flex flex-col gap-1">
                           <input
@@ -390,13 +302,64 @@ const MyBookings = () => {
                           Update
                         </button>
                       )}
-
                     </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {showModal && selectedBooking && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-200/40 backdrop-blur-sm">
+          <div className="relative w-[90%] max-w-md rounded-xl bg-white p-6 shadow-2xl">
+            <button
+              onClick={() => setShowModal(false)}
+              className="absolute top-3 right-3 text-2xl text-gray-400 transition hover:text-red-500"
+            >
+              <FaTimes />
+            </button>
+            <h3 className="mb-4 text-center text-2xl font-bold text-gray-800">📝 Leave a Review</h3>
+            <div className="my-3">
+              <label className="mb-1 flex items-center gap-1 text-sm text-gray-600">
+                <FaUser className="text-blue-500" /> User Name
+              </label>
+              <input
+                type="text"
+                value={user?.displayName || "Anonymous"}
+                readOnly
+                className="w-full cursor-not-allowed rounded-md border border-gray-300 bg-gray-100 px-3 py-2"
+              />
+            </div>
+            <div className="my-3">
+              <label className="mb-1 block text-sm text-gray-600">⭐ Rating (1–5)</label>
+              <input
+                type="number"
+                min="1"
+                max="5"
+                value={rating}
+                onChange={(e) => setRating(e.target.value)}
+                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Ex: 4"
+              />
+            </div>
+            <div className="my-3">
+              <label className="mb-1 block text-sm text-gray-600">✍️ Your Comment</label>
+              <textarea
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                className="h-24 w-full resize-none rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Write your feedback here..."
+              />
+            </div>
+            <button
+              onClick={handleReviewSubmit}
+              className="mt-4 w-full rounded-lg bg-green-600 px-4 py-2 font-semibold text-white transition hover:bg-green-700"
+            >
+              Submit Review
+            </button>
+          </div>
         </div>
       )}
     </div>

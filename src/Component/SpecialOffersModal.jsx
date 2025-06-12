@@ -30,7 +30,7 @@ export default function SpecialOffersModal() {
     <Dialog
       open={isOpen}
       onClose={() => setIsOpen(false)}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 mx-6"
     >
       <Dialog.Panel className="bg-white p-6 rounded-xl max-w-md w-full relative">
         <button

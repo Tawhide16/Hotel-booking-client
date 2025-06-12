@@ -72,7 +72,7 @@ const Banner = () => {
  return (
         <div className='pt-18'>
   <div 
-    className="relative w-full mx-auto px-4  pt-5 lg:pt-10 lg:px-10"
+    className="relative w-full mx-auto   pt-5 lg:pt-10 lg:px-10"
     onMouseEnter={() => setIsHovered(true)}
     onMouseLeave={() => setIsHovered(false)}
   >

@@ -90,7 +90,7 @@ const RoomsCardHorizontal = () => {
   ];
 
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen bg-gray-50  lg:mx-10">
+    <div className="flex flex-col lg:flex-row min-h-screen bg-gray-50 mx-4 lg:mx-10">
       {/* Mobile Nav Toggle Button */}
       <button
         onClick={() => setMobileNavOpen(!mobileNavOpen)}
@@ -360,7 +360,7 @@ const RoomsCardHorizontal = () => {
                         </p>
                       </div>
 
-                      <div className="flex items-center bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300 w-full lg:w-auto text-center justify-center">
+                      <div className="flex items-center bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300">
                         View Details <FiChevronRight className="ml-1" />
                       </div>
                     </div>
