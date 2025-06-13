@@ -1,5 +1,8 @@
-import { NavLink, useLoaderData, useParams } from 'react-router';
-import { FiMapPin, FiCalendar, FiCheck, FiStar, FiChevronLeft, FiChevronRight, FiWifi, FiArrowLeft, FiDollarSign, FiX, FiHome } from 'react-icons/fi';
+import { NavLink, useLoaderData, useParams, useNavigate } from 'react-router-dom';
+import {
+    FiMapPin, FiCalendar, FiCheck, FiStar, FiChevronLeft,
+    FiChevronRight, FiWifi, FiArrowLeft, FiDollarSign, FiX, FiHome
+} from 'react-icons/fi';
 import { FaSwimmingPool, FaSpa, FaUtensils, FaSnowflake } from 'react-icons/fa';
 import React, { useContext, useEffect, useState, useRef } from 'react';
 import { Helmet } from 'react-helmet';
@@ -7,25 +10,24 @@ import { AuthContext } from '../../Provider/AuthProvider';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import PriceBox from './PriceBox';
-import { useNavigate } from 'react-router';
-
 
 const RoomsDetails = () => {
-      const [bookings, setBookings] = useState([]);
-    const { user } = useContext(AuthContext);
-    const detail = useLoaderData();
-    const { id } = useParams();
+    // State management
+    const [bookings, setBookings] = useState([]);
     const [isAlreadyBooked, setIsAlreadyBooked] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [isBookingDisabled, setIsBookingDisabled] = useState(false);
     const [bookingData, setBookingData] = useState({ date: '' });
     const [reviews, setReviews] = useState([]);
+
+    // Hooks and refs
+    const { user } = useContext(AuthContext);
+    const detail = useLoaderData();
+    const { id } = useParams();
     const modalRef = useRef(null);
     const navigate = useNavigate();
 
-
-    console.log(isAlreadyBooked);
-
+    // Image navigation handlers
     const nextImage = () => {
         setCurrentImageIndex(prev => (prev + 1) % detail.image_urls.length);
     };
@@ -34,6 +36,7 @@ const RoomsDetails = () => {
         setCurrentImageIndex(prev => (prev - 1 + detail.image_urls.length) % detail.image_urls.length);
     };
 
+    // Form handlers
     const handleDateChange = (e) => {
         setBookingData({ ...bookingData, date: e.target.value });
     };
@@ -41,7 +44,7 @@ const RoomsDetails = () => {
     const handleBookingSubmit = async (e) => {
         e.preventDefault();
         if (!bookingData.date) {
-            toast.error('Add the date')
+            toast.error('Please select a date');
             return;
         }
 
@@ -63,86 +66,128 @@ const RoomsDetails = () => {
         };
 
         try {
+            const token = await user.getIdToken();
             const res = await fetch("http://localhost:3000/bookings", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
                 body: JSON.stringify(finalBookingData),
             });
 
-            const result = await res.json();
-            console.log("Booking saved:", result);
+            if (res.ok) {
+                setIsBookingDisabled(true);
+                setIsAlreadyBooked(true);
+                if (modalRef.current) modalRef.current.close();
+                toast.success('Booking confirmed successfully!');
 
-            setIsBookingDisabled(true);
-            setIsAlreadyBooked(true);
-            if (modalRef.current) modalRef.current.close();
-            toast.success('Booking confirmed successfully!')
-
+                // Refresh bookings list
+                const bookingsRes = await axios.get("http://localhost:3000/bookings", {
+                    params: { email: user.email },
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setBookings(bookingsRes.data);
+            } else {
+                throw new Error('Booking failed');
+            }
         } catch (err) {
             console.error("Booking failed:", err);
-            toast.error('Booking failed. Please try again.')
-
+            toast.error('Booking failed. Please try again.');
         }
     };
 
-
+    // Data fetching effects
     useEffect(() => {
-    const fetchBookings = async () => {
-        try {
-            const token = await user.getIdToken();
+        const fetchBookings = async () => {
+            try {
+                const token = await user?.getIdToken();
+                if (!token || !user) return;
 
-            const res = await axios.get("http://localhost:3000/bookings", {
-                params: { email: user.email },
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+                const res = await axios.get("http://localhost:3000/bookings", {
+                    params: { email: user.email },
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setBookings(res.data);
+            } catch (err) {
+                console.error("Error fetching bookings:", err);
+            }
+        };
 
-            console.log("Fetched bookings:", res.data);
-            setBookings(res.data);
-        } catch (err) {
-            console.error("Error fetching bookings:", err);
-        }
-    };
-
-    if (user) {
         fetchBookings();
-    }
-}, [user]);
-
-
-
-    // TO CHECK BOOKING STATUS
+    }, [user]);
 
     useEffect(() => {
-        axios.get(`http://localhost:3000/bookings/room/${id}`)
-            .then(res => setIsAlreadyBooked(res.data.isBooked))
-            .catch(err => console.error(err));
-    }, [id]);
+        const checkBookingStatus = async () => {
+            try {
+                const roomStatusRes = await axios.get(`http://localhost:3000/bookings/room/${id}`);
+                setIsAlreadyBooked(roomStatusRes.data.isBooked);
+            } catch (err) {
+                console.error("Error checking booking status:", err);
+            }
+        };
+
+        checkBookingStatus();
+    }, [id, user]);
 
     useEffect(() => {
-        axios.get(`http://localhost:3000/review/${id}`)
-            .then(res => setReviews(res.data))
-            .catch(err => console.error(err));
+        const fetchReviews = async () => {
+            try {
+                const res = await axios.get(`http://localhost:3000/review/${id}`);
+                setReviews(res.data);
+            } catch (err) {
+                console.error("Error fetching reviews:", err);
+            }
+        };
+
+        fetchReviews();
     }, [id]);
+
+    // Helper components
+    const Facility = ({ icon, label }) => (
+        <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+            {React.cloneElement(icon, { className: "text-blue-600 mr-2" })}
+            <span>{label}</span>
+        </div>
+    );
+
     return (
         <>
             <Helmet>
                 <title>Details</title>
-                <meta name="description" content="Helmet application" />
+                <meta name="description" content="Room details page" />
             </Helmet>
+
             <div>
-                
                 <h1 className='text-2xl text-center mt-20 font-bold'>Room Details</h1>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-                    {/* IMAGE GALLERY */}
+                    {/* Image Gallery Section */}
                     <div className="relative h-96 bg-gray-200 rounded-t-2xl overflow-hidden">
-                        <img src={detail.image_urls[currentImageIndex]} alt={detail.hotel_name} className="w-full h-full object-cover" />
-                        <button onClick={prevImage} className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-lg"><FiChevronLeft /></button>
-                        <button onClick={nextImage} className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-lg"><FiChevronRight /></button>
+                        <img
+                            src={detail.image_urls[currentImageIndex]}
+                            alt={detail.hotel_name}
+                            className="w-full h-full object-cover"
+                        />
+                        <button
+                            onClick={prevImage}
+                            className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-lg"
+                        >
+                            <FiChevronLeft />
+                        </button>
+                        <button
+                            onClick={nextImage}
+                            className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-lg"
+                        >
+                            <FiChevronRight />
+                        </button>
                         <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-2">
                             {detail.image_urls.map((_, index) => (
-                                <button key={index} onClick={() => setCurrentImageIndex(index)} className={`h-2 rounded-full ${currentImageIndex === index ? 'bg-white w-6' : 'bg-white/50 w-2'}`} />
+                                <button
+                                    key={index}
+                                    onClick={() => setCurrentImageIndex(index)}
+                                    className={`h-2 rounded-full ${currentImageIndex === index ? 'bg-white w-6' : 'bg-white/50 w-2'}`}
+                                />
                             ))}
                         </div>
                         <div className="absolute top-4 right-4 bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold px-4 py-2 rounded-full shadow-lg flex items-center">
@@ -150,7 +195,7 @@ const RoomsDetails = () => {
                         </div>
                     </div>
 
-                    {/* HOTEL INFO */}
+                    {/* Hotel Info Section */}
                     <div className="bg-white p-6 md:p-8 rounded-b-2xl shadow-xl">
                         <div className="flex flex-col md:flex-row justify-between">
                             <div>
@@ -168,7 +213,7 @@ const RoomsDetails = () => {
                                 </div>
                             </div>
 
-                            {/* PRICE BOX */}
+                            {/* Price and Booking Section */}
                             <div className="mt-4 md:mt-0 bg-blue-50 border border-blue-100 rounded-xl p-4 w-full md:w-64">
                                 <p className="text-3xl font-bold text-gray-900">
                                     {detail.currency} {detail.price_per_night.toLocaleString()}
@@ -177,28 +222,34 @@ const RoomsDetails = () => {
                                 <p className="text-xs text-gray-500 mt-1">via {detail.booking_site}</p>
 
                                 <button
-                                    className={`btn w-full mt-4 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition-all duration-300 ${isBookingDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'}`}
+                                    className={`btn w-full mt-4 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition-all duration-300 ${isAlreadyBooked
+                                            ? 'bg-gray-400 cursor-not-allowed'
+                                            : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'
+                                        }`}
                                     onClick={() => {
-                                        if (!user){
-                                            toast.info('Please login first to book a room!')
+                                        if (!user) {
+                                            toast.info('Please login first to book a room!');
                                             navigate('/login');
                                             return;
                                         }
                                         if (!isAlreadyBooked) modalRef.current.showModal();
                                     }}
-                                   
-                                    disabled={isBookingDisabled}
+                                    disabled={isAlreadyBooked}
                                 >
-                                    {isAlreadyBooked ? 'Already Booked' : isBookingDisabled ? 'Booked!' : 'Book Now'}
+                                    {isAlreadyBooked ? 'Already Booked' : 'Book Now'}
                                 </button>
 
-                                {/* MODAL */}
+                                {/* Booking Modal */}
                                 <dialog ref={modalRef} id="my_modal_1" className="modal">
                                     <div className="modal-box relative">
                                         <form method="dialog">
-                                            <button className="btn btn-sm btn-circle absolute right-2 top-2 hover:bg-red-500 hover:text-white"><FiX /></button>
+                                            <button className="btn btn-sm btn-circle absolute right-2 top-2 hover:bg-red-500 hover:text-white">
+                                                <FiX />
+                                            </button>
                                         </form>
-                                        <h3 className="font-bold text-2xl flex items-center gap-2 text-blue-700 mb-4"><FiHome className="text-indigo-600" /> {detail.hotel_name}</h3>
+                                        <h3 className="font-bold text-2xl flex items-center gap-2 text-blue-700 mb-4">
+                                            <FiHome className="text-indigo-600" /> {detail.hotel_name}
+                                        </h3>
                                         <p className="flex items-center gap-2 text-gray-600 mb-2">
                                             <FiCalendar className="text-indigo-500" /> Date:
                                             <input
@@ -212,6 +263,7 @@ const RoomsDetails = () => {
                                         </p>
                                         <p className="text-gray-600"><FiMapPin /> Location: {detail.location}</p>
                                         <p className="text-gray-600 mt-2"><FiDollarSign /> Price: {detail.price_per_night}</p>
+
                                         <form onSubmit={handleBookingSubmit}>
                                             <button
                                                 type="submit"
@@ -231,7 +283,7 @@ const RoomsDetails = () => {
                             </div>
                         </div>
 
-                        {/* FACILITIES */}
+                        {/* Facilities Section */}
                         <div className="mt-8">
                             <h2 className="text-xl font-bold text-gray-900 mb-4">Facilities</h2>
                             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
@@ -243,13 +295,13 @@ const RoomsDetails = () => {
                             </div>
                         </div>
 
-                        {/* DESCRIPTION */}
+                        {/* Description Section */}
                         <div className="mt-8">
                             <h2 className="text-xl font-bold text-gray-900 mb-4">About {detail.hotel_name}</h2>
                             <p className="text-gray-600">Enjoy a luxurious stay at {detail.hotel_name}, right in the heart of {detail.location}.</p>
                         </div>
 
-                        {/* REVIEWS */}
+                        {/* Reviews Section */}
                         <div className="mt-8">
                             <h2 className="text-xl font-bold text-gray-900 mb-4">Guest Reviews</h2>
                             {reviews.length === 0 ? (
@@ -262,7 +314,10 @@ const RoomsDetails = () => {
                                         <div key={review._id} className="bg-white p-4 rounded-lg shadow-sm">
                                             <div className="flex items-center">
                                                 {[1, 2, 3, 4, 5].map(star => (
-                                                    <FiStar key={star} className={`h-4 w-4 ${star <= review.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} />
+                                                    <FiStar
+                                                        key={star}
+                                                        className={`h-4 w-4 ${star <= review.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                                                    />
                                                 ))}
                                                 <span className="ml-2 text-sm font-medium">
                                                     {review.rating >= 4.5 ? "Perfect" : review.rating >= 3 ? "Great" : "Okay"}
@@ -289,12 +344,5 @@ const RoomsDetails = () => {
         </>
     );
 };
-
-const Facility = ({ icon, label }) => (
-    <div className="flex items-center p-3 bg-gray-50 rounded-lg">
-        {React.cloneElement(icon, { className: "text-blue-600 mr-2" })}
-        <span>{label}</span>
-    </div>
-);
 
 export default RoomsDetails;

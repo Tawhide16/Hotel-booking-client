@@ -4,8 +4,8 @@ import { NavLink } from 'react-router';
 
 import { AuthContext } from '../Provider/AuthProvider';
 import { Tooltip } from 'react-tooltip';
-import { FaHome } from 'react-icons/fa';
-import { MdBookmarkAdded, MdOutlineKingBed } from 'react-icons/md';
+import { FaHome, FaUserAlt } from 'react-icons/fa';
+import { MdBookmarkAdded, MdOutlineKingBed, MdPermContactCalendar } from 'react-icons/md';
 import { IoBed } from 'react-icons/io5';
 // import { Tooltip } from 'react-tooltip';
 
@@ -67,8 +67,30 @@ const NavBar = () => {
             isActive ? "text-[#000] font-bold underline" : "main"
           }
         >
-          <MdBookmarkAdded size={18} />
+          <MdBookmarkAdded size={17} />
           My Bookings
+        </NavLink>
+      </li>
+      <li>
+        <NavLink
+          to="/aboutUs"
+          className={({ isActive }) =>
+            isActive ? "text-[#000] font-bold underline" : "main"
+          }
+        >
+          <FaUserAlt size={17} />
+          About Us
+        </NavLink>
+      </li>
+      <li>
+        <NavLink
+          to="/contactUs"
+          className={({ isActive }) =>
+            isActive ? "text-[#000] font-bold underline" : "main"
+          }
+        >
+         <MdPermContactCalendar size={18} />
+          Contact Us
         </NavLink>
       </li>
     </>

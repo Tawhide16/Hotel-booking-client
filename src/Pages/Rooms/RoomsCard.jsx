@@ -104,7 +104,7 @@ const RoomsCardHorizontal = () => {
         className={`${mobileNavOpen ? "translate-x-0" : "-translate-x-full"} 
           lg:translate-x-0 transform transition-transform duration-300 ease-in-out
           fixed lg:sticky top-0 left-0 w-95 h-screen bg-white shadow-lg lg:shadow-sm z-40
-          overflow-y-auto border-r border-gray-200 rounded-2xl mt-3.5`}
+          overflow-y-auto border-r border-gray-200 rounded-2xl mt-3.5 mb-4`}
       >
         {/* Map Section */}
         <div className='p-4 rounded-2xl'>

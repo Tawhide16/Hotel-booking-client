@@ -16,6 +16,8 @@ import Faq from "../Component/Home/Faq";
 
 import ErrorPage from '../Pages/ErrorPage';
 import PriceBox from "../Pages/Rooms/PriceBox";
+import AboutUs from "../Component/AboutUs";
+import ContactUs from "../Component/ContactUs";
 
 export const router = createBrowserRouter([
   {
@@ -43,6 +45,14 @@ export const router = createBrowserRouter([
         {
           path:"/rooms",
           Component:Rooms
+        },
+        {
+          path:"/aboutUs",
+          Component:AboutUs
+        },
+        {
+          path:"/contactUs",
+          Component:ContactUs
         },
         {
           path:"/rooms/:id",
