@@ -35,7 +35,7 @@ const MyBookings = () => {
       try {
         setLoading(true);
         const res = await axios.get(
-          `http://localhost:3000/bookings?email=${user.email}`,
+          `https://b11a11-server-side-tawhide16.vercel.app/?email=${user.email}`,
           {
             headers: {
               Authorization: `Bearer ${user.accessToken}`,
@@ -80,7 +80,7 @@ const MyBookings = () => {
     if (!result.isConfirmed) return;
 
     try {
-      const res = await axios.delete(`http://localhost:3000/bookings/${id}`);
+      const res = await axios.delete(`https://b11a11-server-side-tawhide16.vercel.app//${id}`);
       if (res.data.deletedCount > 0) {
         await Swal.fire("Deleted!", "Your booking has been cancelled.", "success");
         toast.success("Booking cancelled successfully!");
@@ -99,7 +99,7 @@ const MyBookings = () => {
     }
 
     try {
-      const res = await axios.put(`http://localhost:3000/bookings/${id}`, {
+      const res = await axios.put(`https://b11a11-server-side-tawhide16.vercel.app//${id}`, {
         newDate,
       });
 
@@ -134,7 +134,7 @@ const MyBookings = () => {
     }
 
     axios
-      .post("http://localhost:3000/review", reviewData)
+      .post("https://b11a11-server-side-tawhide16.vercel.app/review", reviewData)
       .then(() => {
         toast.success("Submit successfully");
         setShowModal(false);

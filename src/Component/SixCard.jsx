@@ -8,18 +8,18 @@ import {
   FiChevronLeft,
   FiChevronRight
 } from 'react-icons/fi';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const SixCard = () => {
   const [rooms, setRooms] = useState([]);
   const [reviews, setReviews] = useState([]);
-  const { id } = useParams();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentImageIndices, setCurrentImageIndices] = useState({});
+  console.log(reviews);
 
   useEffect(() => {
-    axios.get('http://localhost:3000/review')
+    axios.get('https://b11a11-server-side-tawhide16.vercel.app/review')
       .then(res => setReviews(res.data))
       .catch(err => console.error(err));
   }, []);
@@ -27,7 +27,7 @@ const SixCard = () => {
   useEffect(() => {
     async function fetchRooms() {
       try {
-        const res = await fetch('http://localhost:3000/new-rooms');
+        const res = await fetch('https://b11a11-server-side-tawhide16.vercel.app/new-rooms');
         if (!res.ok) throw new Error('Failed to fetch rooms');
         const data = await res.json();
         setRooms(data);

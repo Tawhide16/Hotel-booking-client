@@ -9,7 +9,7 @@ import SpecialOffersModal from '../SpecialOffersModal';
 import UserReview from '../UserReview';
 
 const Home = () => {
-  const roomsPromise = fetch("http://localhost:3000/rooms").then(res => res.json());
+  const roomsPromise = fetch("https://b11a11-server-side-tawhide16.vercel.app/rooms").then(res => res.json());
 
   return (
     <>

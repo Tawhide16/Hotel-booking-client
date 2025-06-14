@@ -19,6 +19,7 @@ const RoomsDetails = () => {
     const [isBookingDisabled, setIsBookingDisabled] = useState(false);
     const [bookingData, setBookingData] = useState({ date: '' });
     const [reviews, setReviews] = useState([]);
+    console.log(reviews);
 
     // Hooks and refs
     const { user } = useContext(AuthContext);
@@ -67,7 +68,7 @@ const RoomsDetails = () => {
 
         try {
             const token = await user.getIdToken();
-            const res = await fetch("http://localhost:3000/bookings", {
+            const res = await fetch("https://b11a11-server-side-tawhide16.vercel.app/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -83,7 +84,7 @@ const RoomsDetails = () => {
                 toast.success('Booking confirmed successfully!');
 
                 // Refresh bookings list
-                const bookingsRes = await axios.get("http://localhost:3000/bookings", {
+                const bookingsRes = await axios.get("https://b11a11-server-side-tawhide16.vercel.app/", {
                     params: { email: user.email },
                     headers: { Authorization: `Bearer ${token}` }
                 });
@@ -104,7 +105,7 @@ const RoomsDetails = () => {
                 const token = await user?.getIdToken();
                 if (!token || !user) return;
 
-                const res = await axios.get("http://localhost:3000/bookings", {
+                const res = await axios.get("https://b11a11-server-side-tawhide16.vercel.app/", {
                     params: { email: user.email },
                     headers: { Authorization: `Bearer ${token}` }
                 });
@@ -120,7 +121,7 @@ const RoomsDetails = () => {
     useEffect(() => {
         const checkBookingStatus = async () => {
             try {
-                const roomStatusRes = await axios.get(`http://localhost:3000/bookings/room/${id}`);
+                const roomStatusRes = await axios.get(`https://b11a11-server-side-tawhide16.vercel.app//room/${id}`);
                 setIsAlreadyBooked(roomStatusRes.data.isBooked);
             } catch (err) {
                 console.error("Error checking booking status:", err);
@@ -133,7 +134,7 @@ const RoomsDetails = () => {
     useEffect(() => {
         const fetchReviews = async () => {
             try {
-                const res = await axios.get(`http://localhost:3000/review/${id}`);
+                const res = await axios.get(`https://b11a11-server-side-tawhide16.vercel.app/review/${id}`);
                 setReviews(res.data);
             } catch (err) {
                 console.error("Error fetching reviews:", err);
@@ -142,6 +143,7 @@ const RoomsDetails = () => {
 
         fetchReviews();
     }, [id]);
+
 
     // Helper components
     const Facility = ({ icon, label }) => (

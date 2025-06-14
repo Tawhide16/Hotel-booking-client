@@ -27,10 +27,21 @@ const RoomsCardHorizontal = () => {
 
   /* -----------------  review data ----------------- */
   useEffect(() => {
-    axios.get(`http://localhost:3000/review/${id}`)
-      .then(res => setReviews(res.data))
+    axios.get('https://b11a11-server-side-tawhide16.vercel.app/review')
+      .then(res => {
+        // Filter reviews to only include those for the current room (if id exists)
+        if (id) {
+          const roomReviews = res.data.filter(review => review.roomId === id);
+          setReviews(roomReviews);
+        } else {
+          setReviews(res.data);
+        }
+      })
       .catch(err => console.error(err));
+        
   }, [id]);
+
+
 
   /* ----------------- fetch rooms ----------------- */
   useEffect(() => {
@@ -44,7 +55,7 @@ const RoomsCardHorizontal = () => {
         }
 
         const res = await fetch(
-          `http://localhost:3000/rooms?${params.toString()}`
+          `https://b11a11-server-side-tawhide16.vercel.app/rooms?${params.toString()}`
         );
         const data = await res.json();
         setRooms(data);
@@ -90,7 +101,7 @@ const RoomsCardHorizontal = () => {
   ];
 
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen bg-gray-50  lg:mx-10">
+    <div className="flex flex-col lg:flex-row min-h-screen bg-gray-50 lg:mx-10">
       {/* Mobile Nav Toggle Button */}
       <button
         onClick={() => setMobileNavOpen(!mobileNavOpen)}
@@ -99,11 +110,11 @@ const RoomsCardHorizontal = () => {
         {mobileNavOpen ? <FiX size={24} /> : <FiFilter size={24} />}
       </button>
 
-      {/* Side Navigation - Now visible on md (768px) and larger screens */}
+      {/* Side Navigation */}
       <div
         className={`${mobileNavOpen ? "translate-x-0" : "-translate-x-full"} 
           lg:translate-x-0 transform transition-transform duration-300 ease-in-out
-          fixed lg:sticky top-0 left-0 w-95 h-screen bg-white shadow-lg lg:shadow-sm z-40
+          fixed lg:sticky top-0 left-0 w-55 lg:w-95 h-screen bg-white shadow-lg lg:shadow-sm z-40
           overflow-y-auto border-r border-gray-200 rounded-2xl mt-3.5 mb-4`}
       >
         {/* Map Section */}
@@ -112,13 +123,13 @@ const RoomsCardHorizontal = () => {
             <LuMapPinned size={20} />
             <h1 className="font-bold ml-2 text-xl">Map</h1>
           </div>
-          
+
           <div className="rounded-xl overflow-hidden border border-gray-200">
-            <Map 
-              height={300} 
-              defaultCenter={[23.7808875, 90.4169257]} 
+            <Map
+              height={300}
+              defaultCenter={[23.7808875, 90.4169257]}
               defaultZoom={15}
-              touchEvents={false} // Disable touch events to prevent map interaction issues
+              touchEvents={false}
             >
               <Marker width={50} anchor={[23.7808875, 90.4169257]} />
             </Map>
@@ -160,7 +171,6 @@ const RoomsCardHorizontal = () => {
           </div>
         </div>
 
-        {/* Additional filters can be added here */}
         <div className="p-4 border-t border-gray-200">
           <h3 className="text-lg font-semibold mb-3">Amenities</h3>
           <div className="space-y-2">
@@ -184,7 +194,7 @@ const RoomsCardHorizontal = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 lg:ml-2 p-4"> {/* Adjusted margin for the sidebar width */}
+      <div className="flex-1 lg:ml-2 p-4">
         {/* Mobile filter header */}
         <div className="lg:hidden mb-4 flex justify-between items-center">
           <h1 className="text-xl font-bold text-gray-800">Available Rooms</h1>
@@ -212,10 +222,10 @@ const RoomsCardHorizontal = () => {
                 Array.isArray(room.image_urls) && room.image_urls.length > 0
                   ? room.image_urls
                   : [
-                      room.image_url,
-                      "https://i.ibb.co/35X8S8H7/francesca-saraco-d-S27-XGg-Ry-Q-unsplash.jpg",
-                      "https://source.unsplash.com/random/800x600/?luxury,hotel,room",
-                    ].filter(Boolean);
+                    room.image_url,
+                    "https://i.ibb.co/35X8S8H7/francesca-saraco-d-S27-XGg-Ry-Q-unsplash.jpg",
+                    "https://source.unsplash.com/random/800x600/?luxury,hotel,room",
+                  ].filter(Boolean);
 
               const currentIndex = currentImageIndices[room._id] || 0;
               const totalImages = images.length;
@@ -261,11 +271,10 @@ const RoomsCardHorizontal = () => {
                               onClick={(e) =>
                                 handleIndicatorClick(room._id, index, e)
                               }
-                              className={`h-2 rounded-full transition-all duration-200 ${
-                                currentIndex === index
+                              className={`h-2 rounded-full transition-all duration-200 ${currentIndex === index
                                   ? "bg-white w-4"
                                   : "bg-white/50 w-2"
-                              }`}
+                                }`}
                             />
                           ))}
                         </div>
@@ -364,6 +373,32 @@ const RoomsCardHorizontal = () => {
                         View Details <FiChevronRight className="ml-1" />
                       </div>
                     </div>
+
+                    {/* Room-specific Reviews */}
+                    {id && reviews.length > 0 && (
+                      <div className="mt-4">
+                        <h4 className="font-semibold">Guest Reviews</h4>
+                        <div className="space-y-3 mt-2">
+                          {reviews.map(review => (
+                            <div key={review._id} className="border-t pt-3">
+                              <div className="flex items-center">
+                                <div className="flex text-amber-400 mr-2">
+                                  {[...Array(5)].map((_, i) => (
+                                    <FiStar
+                                      key={i}
+                                      fill={i < Math.floor(review.rating) ? "currentColor" : "none"}
+                                      size={14}
+                                    />
+                                  ))}
+                                </div>
+                                <p className="text-sm text-gray-600">{review.comment}</p>
+                              </div>
+                              <p className="text-xs text-gray-500 mt-1">- {review.userName}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </Link>
               );

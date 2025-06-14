@@ -1,7 +1,7 @@
 import React from 'react';
 import RoomsCard from './RoomsCard';
 import { Helmet } from 'react-helmet';
-const roomsPromise = fetch('http://localhost:3000/rooms').then(res => res.json())
+const roomsPromise = fetch('https://b11a11-server-side-tawhide16.vercel.app/rooms').then(res => res.json())
 const Rooms = () => {
     
     return (

@@ -39,7 +39,7 @@ const PriceBox = () => {
         };
 
         try {
-            const res = await fetch("http://localhost:3000/bookings", {
+            const res = await fetch("https://b11a11-server-side-tawhide16.vercel.app/", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(finalBookingData),
