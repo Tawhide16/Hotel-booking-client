@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Map, Marker } from "pigeon-maps";
 import React, { useEffect, useState } from "react";
-import { FaMapMarked } from "react-icons/fa";
+import { FaMapMarked, FaSpinner } from "react-icons/fa";
 import {
   FiMapPin,
   FiCalendar,
@@ -38,7 +38,7 @@ const RoomsCardHorizontal = () => {
         }
       })
       .catch(err => console.error(err));
-        
+
   }, [id]);
 
 
@@ -55,7 +55,9 @@ const RoomsCardHorizontal = () => {
         }
 
         const res = await fetch(
-          `https://b11a11-server-side-tawhide16.vercel.app/rooms?${params.toString()}`
+          `https://b11a11-server-side-tawhide16.vercel.app/
+
+rooms?${params.toString()}`
         );
         const data = await res.json();
         setRooms(data);
@@ -208,9 +210,9 @@ const RoomsCardHorizontal = () => {
 
         {/* Rooms List */}
         {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <p className="text-gray-500">Loading rooms...</p>
-          </div>
+          <div className="flex justify-center items-center py-12 lg:mt-50">
+                    <FaSpinner className="animate-spin text-4xl text-blue-500" />
+                  </div>
         ) : rooms.length === 0 ? (
           <div className="flex justify-center items-center h-64">
             <p className="text-gray-500">No rooms found matching your criteria.</p>
@@ -272,8 +274,8 @@ const RoomsCardHorizontal = () => {
                                 handleIndicatorClick(room._id, index, e)
                               }
                               className={`h-2 rounded-full transition-all duration-200 ${currentIndex === index
-                                  ? "bg-white w-4"
-                                  : "bg-white/50 w-2"
+                                ? "bg-white w-4"
+                                : "bg-white/50 w-2"
                                 }`}
                             />
                           ))}
@@ -282,7 +284,7 @@ const RoomsCardHorizontal = () => {
                     )}
 
                     {/* Discount Badge */}
-                    <div className="absolute top-4 right-4 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                    <div className="absolute top-4 right-4 bg-gradient-to-r from-amber-500 to-amber-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
                       {room.discount_info || "Special Offer"}
                     </div>
                   </div>
@@ -369,7 +371,7 @@ const RoomsCardHorizontal = () => {
                         </p>
                       </div>
 
-                      <div className="flex items-center bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300 w-full lg:w-auto text-center justify-center">
+                      <div className="flex items-center bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300 w-full lg:w-auto text-center justify-center">
                         View Details <FiChevronRight className="ml-1" />
                       </div>
                     </div>

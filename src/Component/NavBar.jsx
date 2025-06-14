@@ -113,7 +113,7 @@ const NavBar = () => {
 
           <div className='flex text-center justify-items-center'>
             {/* <img className='h-12 hidden md:flex ' src={logo} alt="" /> */}
-            <a className="btn-ghost text-xl hidden lg:flex text-[#0B2545] font-bold pt-2  ">Luxe <span className='text-[#D4AF37]'>Lodge</span> </a>
+            <a className="btn-ghost text-xl hidden lg:flex text-[#0B2545] font-bold pt-2  ">Luxe <span className='text-blue-500'>Lodge</span> </a>
           </div>
         </div>
         <div className="navbar-center hidden lg:flex ">
@@ -155,9 +155,9 @@ const NavBar = () => {
             )}
           </div>
           {user ? (
-            <button onClick={handleLogOut} className="bg-gradient-to-br from-[#0B2545] to-[#D4AF37] text-white font-medium py-2 px-4 rounded-lg shadow-lg hover:opacity-90 transition-opacity">Log Out</button>
+            <button onClick={handleLogOut} className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-2 px-4 rounded-lg shadow-lg hover:opacity-90 transition-opacity">Log Out</button>
           ) : (
-            <NavLink className="bg-gradient-to-br from-[#0B2545] to-[#D4AF37] text-white font-medium py-2 px-4 rounded-lg shadow-lg hover:opacity-90 transition-opacity" to="/login">Log In</NavLink>
+            <NavLink className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-2 px-4 rounded-lg shadow-lg hover:opacity-90 transition-opacity" to="/login">Log In</NavLink>
           )}
         </div>
       </div>

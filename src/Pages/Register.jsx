@@ -1,232 +1,178 @@
-import React, { useState } from 'react';
+// src/Pages/Register.jsx
+
+import React, { useState, useContext } from 'react';
 import { FcGoogle } from 'react-icons/fc';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import { Link, useNavigate } from 'react-router-dom';
-import { useContext } from 'react';
-
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Bounce, toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { AuthContext } from '../Provider/AuthProvider';
+import Lottie from 'lottie-react';
+import loginAnimation from '../assets/RegisterAimation.json';
 
 const Register = () => {
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const [nameError, setNameError] = useState('');
-    const [showPassword, setShowPassword] = useState(false);
-    const { createUser, setUser, updateUser, loginWithGoogle } = useContext(AuthContext);
-    const navigate = useNavigate();
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [nameError, setNameError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const { createUser, setUser, updateUser, loginWithGoogle } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const location = useLocation();
 
-    const validatePassword = (value) => {
-        if (value.length < 6) {
-            return "Password should be at least 6 characters";
-        }
-        if (!/[A-Z]/.test(value)) {
-            return "Password should include a capital letter";
-        }
-        if (!/[a-z]/.test(value)) {
-            return "Password should include a small letter";
-        }
-        return '';
-    };
+  const validatePassword = (value) => {
+    if (value.length < 6) return 'Password should be at least 6 characters';
+    if (!/[A-Z]/.test(value)) return 'Password should include a capital letter';
+    if (!/[a-z]/.test(value)) return 'Password should include a small letter';
+    return '';
+  };
 
-    const handelGoogleLogin = () => {
-        loginWithGoogle()
-            .then((result) => {
+  const handelGoogleLogin = () => {
+    loginWithGoogle()
+      .then(() => {
+        toast.success('Logged in with Google 🎉', { transition: Bounce });
+        navigate(location.state?.pathname || '/');
+      })
+      .catch((error) => toast.error(error.message));
+  };
 
-                navigate(location.state?.pathname || "/");
+  const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
-            })
-            .catch((error) => {
-                console.log(error);
-                toast.error(error.message);
-            });
-    };
+  const handelRegister = (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const name = form.name.value;
+    const email = form.email.value;
+    const photoUrl = form.photoUrl.value;
+    const password = form.password.value;
 
-    const togglePasswordVisibility = () => {
-        setShowPassword(!showPassword);
-    };
+    if (name.length < 6) {
+      setNameError('Name should be at least 6 characters');
+      return;
+    } else {
+      setNameError('');
+    }
 
-    const handelRegister = (e) => {
-        e.preventDefault();
-        const form = e.target;
-        const name = form.name.value;
-        const email = form.email.value;
-        const photoUrl = form.photoUrl.value;
-        const password = form.password.value;
+    const passwordError = validatePassword(password);
+    if (passwordError) {
+      setError(passwordError);
+      return;
+    }
 
-        if (name.length < 6) {
-            setNameError("Name should be at least 6 characters");
-            return;
-        } else {
-            setNameError("");
-        }
+    createUser(email, password)
+      .then((result) => {
+        const user = result.user;
+        updateUser({ displayName: name, photoURL: photoUrl })
+          .then(() => {
+            setUser({ ...user, displayName: name, photoURL: photoUrl });
+            toast.success('Registered successfully ✨', { transition: Bounce });
+            navigate(location.state?.pathname || '/');
+          })
+          .catch((error) => toast.error(error.message));
+      })
+      .catch((error) => toast.error(error.message));
+  };
 
-        const passwordError = validatePassword(password);
-        if (passwordError) {
-            setError(passwordError);
-            return;
-        }
-
-        createUser(email, password)
-            .then((result) => {
-                const user = result.user;
-                updateUser({ displayName: name, photoURL: photoUrl })
-                    .then(() => {
-                        setUser({ ...user, displayName: name, photoURL: photoUrl });
-                        toast.success('Register success fully!', {
-                            position: "top-right",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: false,
-                            pauseOnHover: true,
-                            draggable: true,
-                            progress: undefined,
-                            theme: "light",
-                            transition: Bounce,
-                        });
-                        navigate(location.state?.pathname || "/");
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                        toast.error(error.message);
-                    });
-            })
-            .catch((error) => {
-                toast.error(error.message);
-            });
-    };
-
-    return (
-        <div className="min-h-screen flex items-center justify-center  py-12 px-4 sm:px-6 lg:px-8 ">
-            <div className="max-w-md w-full space-y-8">
-                <div className="text-center">
-                    <h2 className="mt-6 text-3xl font-extrabold text-gray-900 main">Register</h2>
-                </div>
-                <div className="bg-white py-8 px-4 shadow rounded-lg sm:px-10 nav">
-                    <form className="mt-8 space-y-6" onSubmit={handelRegister}>
-                        <div className="rounded-md shadow-sm space-y-4">
-                            <div>
-                                <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                                    Name
-                                </label>
-                                <input
-                                    id="name"
-                                    name="name"
-                                    type="text"
-                                    required
-                                    className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm main"
-                                    placeholder="Name"
-                                />
-                                {nameError && <p className="mt-1 text-sm text-red-600">{nameError}</p>}
-                            </div>
-
-                            <div>
-                                <label htmlFor="photoUrl" className="block text-sm font-medium text-gray-700">
-                                    Photo URL (Optional)
-                                </label>
-                                <input
-                                    id="photoUrl"
-                                    name="photoUrl"
-                                    type="text"
-                                    className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm main"
-                                    placeholder="Photo URL"
-                                />
-                            </div>
-
-                            <div>
-                                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                                    Email address
-                                </label>
-                                <input
-                                    id="email"
-                                    name="email"
-                                    type="email"
-                                    autoComplete="email"
-                                    required
-                                    className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm main"
-                                    placeholder="Email address"
-                                />
-                            </div>
-
-                            <div>
-                                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                                    Password
-                                </label>
-                                <div className="mt-1 relative">
-                                    <input
-                                        id="password"
-                                        name="password"
-                                        type={showPassword ? "text" : "password"}
-                                        autoComplete="current-password"
-                                        required
-                                        value={password}
-                                        onChange={(e) => {
-                                            const val = e.target.value;
-                                            setPassword(val);
-                                            setError(validatePassword(val));
-                                        }}
-                                        className="appearance-none block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm main"
-                                        placeholder="Password"
-                                    />
-                                    <button
-                                        type="button"
-                                        className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                                        onClick={togglePasswordVisibility}
-                                    >
-                                        {showPassword ? (
-                                            <FaEyeSlash className="h-5 w-5 text-gray-400" />
-                                        ) : (
-                                            <FaEye className="h-5 w-5 text-gray-400" />
-                                        )}
-                                    </button>
-                                </div>
-                                {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
-                                {!error && password && <p className="mt-1 text-sm text-green-600">Valid password ✅</p>}
-                            </div>
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                            <div className="text-sm">
-                                <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
-                                    Already have an account? Log in
-                                </Link>
-                            </div>
-                        </div>
-                        <div>
-                            <button
-                                type="submit"
-                                disabled={!!error}
-                                className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#896deb]  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${error ? 'opacity-50 cursor-not-allowed' : ''} `}
-                            >
-                                Register
-                            </button>
-                            
-                        </div>
-                    </form>
-
-                    <div className="mt-6">
-                        <div className="relative">
-                            <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-gray-300" />
-                            </div>
-                            <div className="relative flex justify-center text-sm">
-                                <span className="px-2 bg-white text-gray-500">Or continue with</span>
-                            </div>
-                        </div>
-
-                        <div className="mt-6">
-                            <button
-                                onClick={handelGoogleLogin}
-                                type="button"
-                                className="w-full flex justify-center items-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                            >
-                                <FcGoogle className="h-5 w-5 mr-2" /> Sign in with Google
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr bg-gray-50 to-blue-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-500 px-4">
+      <div className="flex flex-col lg:flex-row items-center gap-10 p-6 rounded-2xl shadow-lg bg-white dark:bg-gray-800">
+        {/* Animation */}
+        <div className="w-80">
+          <Lottie animationData={loginAnimation} loop={true} />
         </div>
-    );
+
+        {/* Form */}
+        <div className="w-full max-w-md bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 p-6 rounded-xl">
+          <h2 className="text-3xl font-bold text-center text-black mb-6">Create Account</h2>
+
+          <form onSubmit={handelRegister} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
+              <input
+                name="name"
+                required
+                type="text"
+                placeholder="Your full name"
+                className="input input-bordered w-full dark:bg-gray-800 dark:text-white"
+              />
+              {nameError && <p className="text-sm text-red-500 mt-1">{nameError}</p>}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Photo URL (optional)</label>
+              <input
+                name="photoUrl"
+                type="text"
+                placeholder="Link to your avatar"
+                className="input input-bordered w-full dark:bg-gray-800 dark:text-white"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+              <input
+                name="email"
+                type="email"
+                required
+                placeholder="you@example.com"
+                className="input input-bordered w-full dark:bg-gray-800 dark:text-white"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
+              <div className="relative">
+                <input
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setError(validatePassword(e.target.value));
+                  }}
+                  placeholder="••••••••"
+                  className="input input-bordered w-full dark:bg-gray-800 dark:text-white"
+                />
+                <button type="button" onClick={togglePasswordVisibility} className="absolute top-2 right-3 text-gray-400">
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
+              </div>
+              {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
+              {!error && password && <p className="text-sm text-green-600 mt-1">Valid password ✅</p>}
+            </div>
+
+            <button
+              type="submit"
+              disabled={!!error}
+              className={`btn w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white ${
+                error ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+            >
+              Register
+            </button>
+
+            <p className="text-sm text-center text-gray-600 dark:text-gray-300 mt-3">
+              Already have an account?{' '}
+              <Link to="/login" className="text-purple-600 dark:text-purple-400 hover:underline">
+                Log in
+              </Link>
+            </p>
+          </form>
+
+          <div className="divider text-gray-400 dark:text-gray-500 mt-6">OR</div>
+
+          <button
+            onClick={handelGoogleLogin}
+            type="button"
+            className="btn w-full flex items-center justify-center gap-2 border-gray-300"
+          >
+            <FcGoogle size={20} /> Sign in with Google
+          </button>
+        </div>
+      </div>
+      <ToastContainer />
+    </div>
+  );
 };
 
 export default Register;

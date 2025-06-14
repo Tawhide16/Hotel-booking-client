@@ -96,7 +96,7 @@ const Banner = () => {
             <h2 className="text-4xl font-bold mb-4">{event.name || "Event's"}</h2>
             <p className="text-xl mb-6">{event.description || "UpComing Event"}</p>
            <Link to="/rooms">
-           <button className="bg-gradient-to-br from-[#0B2545] to-[#D4AF37] btn btn-primary px-8 py-3 text-lg rounded-full hover:scale-105 transition-transform border-none bg-[#0B2545] hover:bg-[#D4AF37]">
+           <button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 btn btn-primary px-8 py-3 text-lg rounded-full hover:scale-105 transition-transform border-none bg-[#0B2545] hover:bg-[#D4AF37]">
               Room's
             </button>
            </Link> 
@@ -131,7 +131,7 @@ const Banner = () => {
         <button
           key={index}
           onClick={() => goToSlide(index)}
-          className={`w-4 h-4 rounded-full transition-all duration-300 ${index === currentSlide ? 'bg-[#D4AF37] w-8' : 'bg-gray-400 hover:bg-[#0B2545]'}`}
+          className={`w-4 h-4 rounded-full transition-all duration-300 ${index === currentSlide ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 w-8' : 'bg-gray-400 hover:bg-[#0B2545]'}`}
           aria-label={`Go to slide ${index + 1}`}
         />
       ))}

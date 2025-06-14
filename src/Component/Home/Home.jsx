@@ -22,8 +22,8 @@ const Home = () => {
         <Banner />
         <SixCard roomsPromise={roomsPromise} />
         <UserReview></UserReview>
-          <OurService />
-        <Faq  />
+        <OurService />
+        <Faq />
         <div className='px-5 md:px-7 lg:px-28 rounded-[12px] pb-5 lg:py-5'>
           <Map height={400} defaultCenter={[23.7808875, 90.4169257]} defaultZoom={15} >
             <Marker width={50} anchor={[23.7808875, 90.4169257]} />

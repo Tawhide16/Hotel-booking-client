@@ -57,7 +57,9 @@ export const router = createBrowserRouter([
         {
           path:"/rooms/:id",
           Component:RoomsDetails,
-          loader: ({params}) => fetch(`https://b11a11-server-side-tawhide16.vercel.app/rooms/${params.id}`)
+          loader: ({params}) => fetch(`https://b11a11-server-side-tawhide16.vercel.app/
+
+rooms/${params.id}`)
         },
         {
           path:"/my-bookings",

@@ -68,7 +68,7 @@ const RoomsDetails = () => {
 
         try {
             const token = await user.getIdToken();
-            const res = await fetch("https://b11a11-server-side-tawhide16.vercel.app/", {
+            const res = await fetch("https://b11a11-server-side-tawhide16.vercel.app/bookings", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -84,7 +84,7 @@ const RoomsDetails = () => {
                 toast.success('Booking confirmed successfully!');
 
                 // Refresh bookings list
-                const bookingsRes = await axios.get("https://b11a11-server-side-tawhide16.vercel.app/", {
+                const bookingsRes = await axios.get("https://b11a11-server-side-tawhide16.vercel.app/bookings", {
                     params: { email: user.email },
                     headers: { Authorization: `Bearer ${token}` }
                 });
@@ -105,7 +105,7 @@ const RoomsDetails = () => {
                 const token = await user?.getIdToken();
                 if (!token || !user) return;
 
-                const res = await axios.get("https://b11a11-server-side-tawhide16.vercel.app/", {
+                const res = await axios.get("https://b11a11-server-side-tawhide16.vercel.app/bookings", {
                     params: { email: user.email },
                     headers: { Authorization: `Bearer ${token}` }
                 });
@@ -121,7 +121,7 @@ const RoomsDetails = () => {
     useEffect(() => {
         const checkBookingStatus = async () => {
             try {
-                const roomStatusRes = await axios.get(`https://b11a11-server-side-tawhide16.vercel.app//room/${id}`);
+                const roomStatusRes = await axios.get(`https://b11a11-server-side-tawhide16.vercel.app/bookings/room/${id}`);
                 setIsAlreadyBooked(roomStatusRes.data.isBooked);
             } catch (err) {
                 console.error("Error checking booking status:", err);

@@ -27,7 +27,9 @@ const RoomsCardHorizontal = () => {
 
   /* -----------------  review data ----------------- */
   useEffect(() => {
-    axios.get(`https://b11a11-server-side-tawhide16.vercel.app/review/${id}`)
+    axios.get(`https://b11a11-server-side-tawhide16.vercel.app/
+
+review/${id}`)
       .then(res => setReviews(res.data))
       .catch(err => console.error(err));
   }, [id]);
@@ -44,7 +46,9 @@ const RoomsCardHorizontal = () => {
         }
 
         const res = await fetch(
-          `https://b11a11-server-side-tawhide16.vercel.app/rooms?${params.toString()}`
+          `https://b11a11-server-side-tawhide16.vercel.app/
+
+rooms?${params.toString()}`
         );
         const data = await res.json();
         setRooms(data);

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import moment from "moment";
-
 import { FaStar, FaTimes, FaUser } from "react-icons/fa";
 import {
   FaMapMarkerAlt,
@@ -35,14 +34,22 @@ const MyBookings = () => {
       try {
         setLoading(true);
         const res = await axios.get(
-          `https://b11a11-server-side-tawhide16.vercel.app/?email=${user.email}`,
+          `https://b11a11-server-side-tawhide16.vercel.app/bookings?email=${user.email}`,
           {
             headers: {
               Authorization: `Bearer ${user.accessToken}`,
             },
           }
         );
-        setBookings(res.data);
+
+        if (Array.isArray(res.data)) {
+          setBookings(res.data);
+        } else {
+          console.error("Unexpected data:", res.data);
+          setBookings([]);
+          toast.error("Unexpected response from server");
+        }
+
         setError(null);
       } catch (err) {
         console.error("Failed to fetch bookings:", err);
@@ -59,7 +66,6 @@ const MyBookings = () => {
   const handleCancel = async (id, stayDate) => {
     const bookingDate = moment(stayDate, "YYYY-MM-DD");
     const today = moment().startOf("day");
-
     const cancelDeadline = bookingDate.clone().subtract(1, "day");
 
     if (today.isAfter(cancelDeadline)) {
@@ -80,7 +86,9 @@ const MyBookings = () => {
     if (!result.isConfirmed) return;
 
     try {
-      const res = await axios.delete(`https://b11a11-server-side-tawhide16.vercel.app//${id}`);
+      const res = await axios.delete(
+        `https://b11a11-server-side-tawhide16.vercel.app/bookings/${id}`
+      );
       if (res.data.deletedCount > 0) {
         await Swal.fire("Deleted!", "Your booking has been cancelled.", "success");
         toast.success("Booking cancelled successfully!");
@@ -99,9 +107,10 @@ const MyBookings = () => {
     }
 
     try {
-      const res = await axios.put(`https://b11a11-server-side-tawhide16.vercel.app//${id}`, {
-        newDate,
-      });
+      const res = await axios.put(
+        `https://b11a11-server-side-tawhide16.vercel.app/bookings/${id}`,
+        { newDate }
+      );
 
       toast.success("Booking updated!");
       setBookings((prev) =>
@@ -146,33 +155,6 @@ const MyBookings = () => {
       });
   };
 
-  const getStatusStyle = (status) => {
-    if (!status) return "text-gray-500";
-    switch (status.toLowerCase()) {
-      case "confirmed":
-        return "text-green-600";
-      case "pending":
-        return "text-yellow-500";
-      case "cancelled":
-        return "text-red-500";
-      default:
-        return "text-gray-500";
-    }
-  };
-
-  const getStatusIcon = (status) => {
-    switch (status?.toLowerCase()) {
-      case "confirmed":
-        return <FaCheckCircle className="text-green-500" />;
-      case "pending":
-        return <FaSpinner className="text-yellow-500 animate-spin" />;
-      case "cancelled":
-        return <FaTimesCircle className="text-red-500" />;
-      default:
-        return <FaExclamationCircle className="text-gray-500" />;
-    }
-  };
-
   return (
     <div className="container mx-auto px-4 py-8">
       <h2 className="text-2xl font-bold text-center mb-6 mt-10">My Bookings</h2>
@@ -208,7 +190,7 @@ const MyBookings = () => {
             <thead className="bg-blue-600 text-white">
               <tr>
                 <th className="py-3 px-4 text-left">Room</th>
-                <th className="py-3  text-left"></th>
+                <th className="py-3 text-left"></th>
                 <th className="py-3 px-4 text-left">Location</th>
                 <th className="py-3 px-4 text-left">Date</th>
                 <th className="py-3 px-4 text-left">Price</th>
