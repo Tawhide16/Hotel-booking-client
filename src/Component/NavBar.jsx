@@ -1,11 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
 // import 'react-tooltip/dist/react-tooltip.css';
 import { NavLink } from 'react-router';
-
 import { AuthContext } from '../Provider/AuthProvider';
 import { Tooltip } from 'react-tooltip';
 import { FaHome, FaUserAlt } from 'react-icons/fa';
-import { MdBookmarkAdded, MdOutlineKingBed, MdPermContactCalendar } from 'react-icons/md';
+import { MdBedroomParent, MdBookmarkAdded, MdOutlineKingBed, MdPermContactCalendar } from 'react-icons/md';
 import { IoBed } from 'react-icons/io5';
 // import { Tooltip } from 'react-tooltip';
 
@@ -112,8 +111,10 @@ const NavBar = () => {
           </div>
 
           <div className='flex text-center justify-items-center'>
-            {/* <img className='h-12 hidden md:flex ' src={logo} alt="" /> */}
             <a className="btn-ghost text-xl hidden lg:flex text-[#0B2545] font-bold pt-2  ">Luxe <span className='text-blue-500'>Lodge</span> </a>
+          </div>
+          <div className='text-blue-500 flex lg:hidden'>
+            <MdBedroomParent size={22} />
           </div>
         </div>
         <div className="navbar-center hidden lg:flex ">
@@ -124,14 +125,6 @@ const NavBar = () => {
 
         <div className="navbar-end gap-3">
          
-          <label className="toggle text-base-content">
-            <input type="checkbox" onClick={handelTogolTheme} value="synthwave" className="theme-controller" />
-
-            <svg aria-label="sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></g></svg>
-
-            <svg aria-label="moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2" fill="none" stroke="currentColor"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></g></svg>
-
-          </label>
           <div>
             {user && (
               <>
