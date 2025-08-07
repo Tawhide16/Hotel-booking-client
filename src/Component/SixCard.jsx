@@ -41,15 +41,15 @@ const SixCard = () => {
   }, []);
 
   if (loading) {
-    return <div className="text-center py-8">Loading rooms...</div>;
+    return <div className="text-center py-8 text-gray-800 dark:text-gray-200">Loading rooms...</div>;
   }
 
   if (error) {
-    return <div className="text-center py-8 text-red-500">Error: {error}</div>;
+    return <div className="text-center py-8 text-red-500">{`Error: ${error}`}</div>;
   }
 
   if (rooms.length === 0) {
-    return <div className="text-center py-8">No rooms found</div>;
+    return <div className="text-center py-8 text-gray-800 dark:text-gray-200">No rooms found</div>;
   }
 
   const handleNextImage = (roomId, total, e) => {
@@ -75,7 +75,7 @@ const SixCard = () => {
 
   return (
     <div className="mx-auto justify-items-center my-10 lg:px-10">
-      <h1 className='text-center text-4xl font-bold my-8'>Featured Rooms</h1>
+      <h1 className='text-center text-4xl font-bold my-8 text-gray-900 dark:text-white'>Featured Rooms</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mx-4 w-full">
         {[...rooms]
           .sort((a, b) => {
@@ -97,8 +97,8 @@ const SixCard = () => {
             const roomReviews = reviews.filter(r => r.roomId === room._id);
 
             return (
-              <div key={room._id} className="rounded-2xl overflow-hidden border border-gray-100 shadow-xl hover:shadow-2xl transition-all duration-300 bg-white transform hover:-translate-y-1 mx-2">
-                <div className="relative h-75 bg-gray-200 overflow-hidden">
+              <div key={room._id} className="rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-700 shadow-xl hover:shadow-2xl transition-all duration-300 bg-white dark:bg-gray-800 transform hover:-translate-y-1 mx-2">
+                <div className="relative h-75 bg-gray-200 dark:bg-gray-700 overflow-hidden">
                   <img
                     src={images[currentIndex]}
                     alt={room.hotel_name}
@@ -110,13 +110,13 @@ const SixCard = () => {
 
                   <button
                     onClick={(e) => handlePrevImage(room._id, totalImages, e)}
-                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-md transition-all duration-200"
+                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 dark:bg-gray-900/80 hover:bg-white dark:hover:bg-gray-900 text-gray-800 dark:text-gray-200 rounded-full p-2 shadow-md transition-all duration-200"
                   >
                     <FiChevronLeft className="h-4 w-4" />
                   </button>
                   <button
                     onClick={(e) => handleNextImage(room._id, totalImages, e)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-md transition-all duration-200"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 dark:bg-gray-900/80 hover:bg-white dark:hover:bg-gray-900 text-gray-800 dark:text-gray-200 rounded-full p-2 shadow-md transition-all duration-200"
                   >
                     <FiChevronRight className="h-4 w-4" />
                   </button>
@@ -141,7 +141,7 @@ const SixCard = () => {
 
                 <div className="p-5">
                   <div className="flex justify-between items-start mb-2">
-                    <h1 className="text-xl font-bold text-gray-800 truncate pr-2">
+                    <h1 className="text-xl font-bold text-gray-800 dark:text-gray-200 truncate pr-2">
                       {room.hotel_name}
                     </h1>
                     <div className="flex items-center bg-blue-600/10 px-2 py-1 rounded-full">
@@ -150,8 +150,8 @@ const SixCard = () => {
                     </div>
                   </div>
 
-                  <div className="flex items-center text-gray-500 text-sm mb-3">
-                    <FiMapPin className="mr-1 text-gray-400" />
+                  <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm mb-3">
+                    <FiMapPin className="mr-1 text-gray-400 dark:text-gray-500" />
                     <span>{room.location}</span>
                   </div>
 
@@ -159,19 +159,19 @@ const SixCard = () => {
                     {['Free WiFi', 'Pool', 'Spa', 'Restaurant', 'AC'].map(facility => (
                       <span
                         key={facility}
-                        className="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full transition-colors duration-300"
+                        className="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 text-xs px-2 py-1 rounded-full transition-colors duration-300"
                       >
                         {facility}
                       </span>
                     ))}
                   </div>
 
-                  <div className="flex items-center text-sm text-gray-600 mb-4">
+                  <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 mb-4">
                     <div className="flex items-center mr-3">
                       {[...Array(5)].map((_, i) => (
                         <FiStar
                           key={i}
-                          className={`h-4 w-4 ${i < Math.floor(room.rating) ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                          className={`h-4 w-4 ${i < Math.floor(room.rating) ? 'text-yellow-400 fill-current' : 'text-gray-300 dark:text-gray-600'
                             }`}
                         />
                       ))}
@@ -179,18 +179,18 @@ const SixCard = () => {
                     <span>({roomReviews.length} reviews)</span>
                   </div>
 
-                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 mb-3 border border-blue-100">
+                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-800 rounded-xl p-4 mb-3 border border-blue-100 dark:border-gray-600">
                     <div className="flex justify-between items-end">
                       <div>
-                        <p className="text-gray-500 text-xs mb-1">Price per night</p>
+                        <p className="text-gray-500 dark:text-gray-400 text-xs mb-1">Price per night</p>
                         <div className="flex items-end">
-                          <span className="text-2xl font-bold text-gray-800">
+                          <span className="text-2xl font-bold text-gray-800 dark:text-gray-200">
                             {room.currency} {room.price_per_night.toLocaleString()}
                           </span>
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="text-gray-500 text-xs">via</p>
+                        <p className="text-gray-500 dark:text-gray-400 text-xs">via</p>
                         <p className="font-medium text-blue-600">{room.booking_site}</p>
                       </div>
                     </div>
@@ -200,7 +200,7 @@ const SixCard = () => {
                     <span className="text-green-600 font-medium flex items-center">
                       <FiCheck className="mr-1" /> {room.cancellation_policy}
                     </span>
-                    <span className="text-gray-500 flex items-center">
+                    <span className="text-gray-500 dark:text-gray-400 flex items-center">
                       <FiCalendar className="mr-1" /> {room.stay_dates}
                     </span>
                   </div>

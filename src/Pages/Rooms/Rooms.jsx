@@ -10,7 +10,7 @@ const Rooms = () => {
                  <title>Room's</title>
                 <meta name="description" content="Helmet application" />
             </Helmet>
-        <div className='bg-gray-50'>
+        <div >
             <h1 className=' pt-20 text-center font-bold text-3xl py-8 font-myfont '>All Rooms</h1>
             <RoomsCard roomsPromise={roomsPromise}></RoomsCard>
         </div>
