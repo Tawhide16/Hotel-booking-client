@@ -11,7 +11,7 @@ Welcome to **Hotelify**, a sleek and user-friendly hotel booking platform built 
 
 ---
 
-## 🎯 Purpose
+## 🎯 Purpose \\
 
 This project was developed to:
 - Showcase front-end & back-end integration
