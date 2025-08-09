@@ -1,3 +1,4 @@
+// same imports...
 import { useEffect, useState } from "react";
 import moment from "moment";
 import { FaStar, FaTimes, FaUser } from "react-icons/fa";
@@ -45,15 +46,13 @@ const MyBookings = () => {
         if (Array.isArray(res.data)) {
           setBookings(res.data);
         } else {
-          console.error("Unexpected data:", res.data);
           setBookings([]);
           toast.error("Unexpected response from server");
         }
 
         setError(null);
       } catch (err) {
-        console.error("Failed to fetch bookings:", err);
-        setError("Failed to load bookings. Please try again later.");
+        setError("Failed to load bookings.");
         toast.error("Failed to load bookings");
       } finally {
         setLoading(false);
@@ -69,7 +68,7 @@ const MyBookings = () => {
     const cancelDeadline = bookingDate.clone().subtract(1, "day");
 
     if (today.isAfter(cancelDeadline)) {
-      toast.error("You can only cancel bookings at least 1 day before the booked date.");
+      toast.error("You can only cancel bookings at least 1 day before.");
       return;
     }
 
@@ -95,7 +94,6 @@ const MyBookings = () => {
         setBookings((prev) => prev.filter((b) => b._id !== id));
       }
     } catch (err) {
-      console.error("Cancel error:", err);
       toast.error("Failed to cancel booking");
     }
   };
@@ -107,7 +105,7 @@ const MyBookings = () => {
     }
 
     try {
-      const res = await axios.put(
+      await axios.put(
         `https://b11a11-server-side-tawhide16.vercel.app/bookings/${id}`,
         { newDate }
       );
@@ -122,7 +120,6 @@ const MyBookings = () => {
       setEditingBookingId(null);
       setNewDate("");
     } catch (err) {
-      console.error(err);
       toast.error("Failed to update booking date");
     }
   };
@@ -156,7 +153,7 @@ const MyBookings = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 dark:text-gray-200">
       <h2 className="text-2xl font-bold text-center mb-6 mt-10">My Bookings</h2>
 
       {loading ? (
@@ -176,7 +173,7 @@ const MyBookings = () => {
         </div>
       ) : bookings.length === 0 ? (
         <div className="text-center py-8">
-          <p className="text-gray-500 mb-4">You haven't booked any rooms yet.</p>
+          <p className="text-gray-500 dark:text-gray-400 mb-4">You haven't booked any rooms yet.</p>
           <a
             href="/rooms"
             className="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
@@ -186,8 +183,8 @@ const MyBookings = () => {
         </div>
       ) : (
         <div className="overflow-x-auto">
-          <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
-            <thead className="bg-blue-600 text-white">
+          <table className="min-w-full bg-white dark:bg-gray-900 shadow-md rounded-lg overflow-hidden">
+            <thead className="bg-blue-600 text-white dark:bg-blue-700">
               <tr>
                 <th className="py-3 px-4 text-left">Room</th>
                 <th className="py-3 text-left"></th>
@@ -199,7 +196,7 @@ const MyBookings = () => {
             </thead>
             <tbody>
               {bookings.map((booking) => (
-                <tr key={booking._id} className="border-b hover:bg-gray-50 transition duration-200">
+                <tr key={booking._id} className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition duration-200">
                   <td className="py-4 px-4">
                     <div className="flex items-center gap-3">
                       <img
@@ -208,14 +205,14 @@ const MyBookings = () => {
                         className="w-20 h-20 rounded object-cover shadow"
                       />
                       <div>
-                        <div className="font-semibold text-base">{booking.hotelName}</div>
+                        <div className="font-semibold">{booking.hotelName}</div>
                       </div>
                     </div>
                   </td>
                   <td className="py-4 px-4 font-medium">
                     <div className="font-semibold">{booking.roomTitle}</div>
                     {booking.roomType && (
-                      <div className="text-xs text-gray-500 mt-1">{booking.roomType}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">{booking.roomType}</div>
                     )}
                   </td>
                   <td className="py-4 px-4">
@@ -248,25 +245,23 @@ const MyBookings = () => {
                       >
                         Leave Review
                       </button>
-
                       <button
                         onClick={() => handleCancel(booking._id, booking.stayDate)}
                         disabled={
                           booking.status?.toLowerCase() === "cancelled" ||
-                          moment().isAfter(moment(booking.stayDate, "YYYY-MM-DD").subtract(1, "day"))
+                          moment().isAfter(moment(booking.stayDate).subtract(1, "day"))
                         }
                         className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm disabled:bg-gray-300 disabled:cursor-not-allowed"
                       >
                         Cancel
                       </button>
-
                       {editingBookingId === booking._id ? (
                         <div className="flex flex-col gap-1">
                           <input
                             type="date"
                             value={newDate}
                             onChange={(e) => setNewDate(e.target.value)}
-                            className="border px-2 py-1 rounded"
+                            className="border px-2 py-1 rounded dark:bg-gray-800 dark:border-gray-600"
                           />
                           <button
                             onClick={() => handleUpdate(booking._id)}
@@ -294,50 +289,48 @@ const MyBookings = () => {
       )}
 
       {showModal && selectedBooking && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-200/40 backdrop-blur-sm">
-          <div className="relative w-[90%] max-w-md rounded-xl bg-white p-6 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-200/40 dark:bg-black/40 backdrop-blur-sm">
+          <div className="relative w-[90%] max-w-md rounded-xl bg-white dark:bg-gray-800 p-6 shadow-2xl">
             <button
               onClick={() => setShowModal(false)}
-              className="absolute top-3 right-3 text-2xl text-gray-400 transition hover:text-red-500"
+              className="absolute top-3 right-3 text-2xl text-gray-400 hover:text-red-500"
             >
               <FaTimes />
             </button>
-            <h3 className="mb-4 text-center text-2xl font-bold text-gray-800">📝 Leave a Review</h3>
+            <h3 className="mb-4 text-center text-2xl font-bold text-gray-800 dark:text-white">📝 Leave a Review</h3>
             <div className="my-3">
-              <label className="mb-1 flex items-center gap-1 text-sm text-gray-600">
+              <label className="mb-1 flex items-center gap-1 text-sm text-gray-600 dark:text-gray-300">
                 <FaUser className="text-blue-500" /> User Name
               </label>
               <input
                 type="text"
                 value={user?.displayName || "Anonymous"}
                 readOnly
-                className="w-full cursor-not-allowed rounded-md border border-gray-300 bg-gray-100 px-3 py-2"
+                className="w-full cursor-not-allowed rounded-md border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 px-3 py-2"
               />
             </div>
             <div className="my-3">
-              <label className="mb-1 block text-sm text-gray-600">⭐ Rating (1–5)</label>
+              <label className="mb-1 block text-sm text-gray-600 dark:text-gray-300">⭐ Rating (1–5)</label>
               <input
                 type="number"
                 min="1"
                 max="5"
                 value={rating}
                 onChange={(e) => setRating(e.target.value)}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Ex: 4"
+                className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div className="my-3">
-              <label className="mb-1 block text-sm text-gray-600">✍️ Your Comment</label>
+              <label className="mb-1 block text-sm text-gray-600 dark:text-gray-300">✍️ Your Comment</label>
               <textarea
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                className="h-24 w-full resize-none rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Write your feedback here..."
+                className="h-24 w-full resize-none rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <button
               onClick={handleReviewSubmit}
-              className="mt-4 w-full rounded-lg bg-green-600 px-4 py-2 font-semibold text-white transition hover:bg-green-700"
+              className="mt-4 w-full rounded-lg bg-green-600 px-4 py-2 font-semibold text-white hover:bg-green-700"
             >
               Submit Review
             </button>
