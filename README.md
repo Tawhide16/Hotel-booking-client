@@ -1,5 +1,11 @@
 # 🏨 Hotelify - A Modern Hotel Booking Platform
 
+## 📸 Screenshot
+
+<p align="center">
+  <img src="https://i.ibb.co.com/KctnN9RM/Screenshot-2025-08-09-115436.png" alt="Hotelify Screenshot" width="100%" />
+</p>
+
 Welcome to **Hotelify**, a sleek and user-friendly hotel booking platform built to offer travelers a smooth, secure, and feature-rich experience. This project is part of Assignment-11 and demonstrates modern full-stack web development practices with user authentication, room booking, and review systems.
 
 ---
